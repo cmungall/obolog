@@ -58,6 +58,10 @@ See also:
     * [ro-core-type-type](https://github.com/BFO-ontology/BFO/blob/master/src/ontology/fol-mungall/fol-src/ro-core-type-type-src.clif)
     * [ro-core-instance-instance](https://github.com/BFO-ontology/BFO/blob/master/src/ontology/fol-mungall/fol-src/ro-core-instance-instance-src.clif)
 
+## Presentations
+
+ * [obo-and-common-logic](https://www.slideshare.net/cmungall/obo-and-common-logic)
+
 
 ## Theorem Proving
 
