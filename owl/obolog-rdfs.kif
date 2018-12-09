@@ -1,0 +1,18 @@
+(abstract "Mapping to OWL-Full, with types and type-level relations in the domain of discourse.")
+
+(metarelation triple)
+(comment triple "We use a ternary relation of type triple to store RDF facts. This is to easily segregate the RDF universe from the rest of the Obolog universe.")
+
+
+(<=> (is_a ?A ?b)
+     (rdfs:SubClassOf ?A ?B))
+
+;; @Axiom: subrelation = subPropertyOf
+(<=> (subrelation ?A ?B)
+     (rdfs:SubPropertyOf ?A ?B))
+
+;; @Axiom: all binary relations in Obol are added as triples
+(<=>  (and (?R ?A ?B)
+           (relation ?R))
+      (triple ?R ?A ?B))
+

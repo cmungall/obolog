@@ -1,0 +1,750 @@
+;; ************************************************************
+;; Obolog : A first order logic translation for OBO ontologies
+;; ************************************************************
+;; Chris Mungall 2005-2008
+;;
+;; See: http://www.geneontology.org/GO.format.obo-1_3.shtml
+;;
+;; TODO: translate from KIF to CLIF.
+;;         + change => and <=> to if and iff (trivial)
+;;         + manifest implicit universal quantifiers (automated)
+;;         + change variable syntax (non-essential)
+;;         + translate @Axiom comments to named cl-texts (automated)
+;;
+;; CONVENTIONS:
+;; upper case for universals, lower case for instances
+;; - but remember, most KIF implementations are case insenstivite
+
+(module "obolog")
+
+(abstract "A collection of constructs expressed in first-order logic to provide formal semantics for OBO ontologies.")
+
+
+(imports instance_of)
+(imports is_a)
+(imports exists_at)
+(imports equivalent_to)
+
+(syntax_translation obo "[Term] id:sub-id ... is_a:super-id" (is_a sub-id super-id))
+(syntax_translation obo "[Instance] id:sub-id ... instance_of:super-id" (instance_of sub-id super-id))
+
+;;(syntax_translation obo "S xref1... xrefN" (posits xrefN S))
+
+;; ========================================
+;; UNARY PREDICATES
+;; ========================================
+
+;; ****************************************
+;; (type ?t)
+;; ****************************************
+(unary type)
+(text_definition type "unary predicate which holds over types. Types are patterns in reality, and each type is instantiated by at least one instance at some time.")
+(comment type "Note that types are within the domain of discourse in Obolog. Relations can hold between types.")
+(example type (type Left_hand) "FMA")
+(example type (type Lung) "FMA")
+(example type (type Red) "PATO")
+(example type (type Shape) "PATO")
+;; @Axiom: every type has at least one instance
+(=> (type ?U)
+    (or (exists (?i) (instance_of ?i ?U))
+        (exists (?i ?t) (instance_of ?i ?U ?t))))
+
+;; ****************************************
+;; (instance ?i)
+;; ****************************************
+(unary instance)
+(text_definition instance "unary predicate which holds over instances. Instances are spatiotemporal particulars, every instance instantiates a type.")
+(example instance (instance lung_of_patient_02345) "A particular instance.")
+(example instance (instance shape_of_lung_of_patient_02345) "A particular instance.")
+;; @Axiom: every instance is an instance of some type
+(=> (instance ?i)
+    (or
+     (exists (?U) (instance_of ?i ?U))
+     (exists (?U ?t) (instance_of ?i ?U ?t))))
+;; @Axiom: instance and type are disjoint predicates
+(not (exists (?x) (and (instance ?x) (type ?x))))
+
+;; ****************************************
+;; (relation ?r)
+;; ****************************************
+(unary relation)
+(text_definition relation "unary predicate which holds over relations. Relations constitute the edge labels on ontology graphs.")
+(comment relation "Note that relations are not constrained to be binary. Relations are part of the domain of discourse in Obolog. However, they can be 'compiled out' by translating them to predicates, treating meta-relation axioms as macros.")
+(example relation (relation part_of) "RO")
+(example relation (relation is_a) "RO")
+(example relation (relation instance_of) "RO")
+
+;; @Axiom: instance and relation are disjoint predicates
+(not (exists (?x) (and (instance ?x) (relation ?x))))
+;; @Axiom: type and relation are disjoint predicates
+(not (exists (?x) (and (type ?x) (relation ?x))))
+
+;; ****************************************
+;; (annotation ?a)
+;; ****************************************
+(unary annotation)
+(text_definition annotation "unary predicate which holds over annotations. Annotations are reified sentences.")
+(comment annotation "Axioms pertaining to annotations are dealt with in a separate theory.")
+
+;; ****************************************
+;; (type_type ?r)
+;; ****************************************
+(unary type_type)
+(text_definition type_type "unary predicate which holds over relations whose domain and range are types")
+;; @Axiom: type_type relations hold between types
+(<=> (type_type ?r)
+     (and (forall (?a ?b)
+                  (=> (?r ?a ?b)
+                      (and (type ?a)
+                           (type ?b))))
+          (forall (?a ?b)
+                  (=> (?r ?a ?b ?t)
+                      (and (type ?a)
+                           (type ?b))))))
+;; @Axiom: type_type holds only for relations
+(=> (type_type ?r)
+    (relation ?r))
+
+;; ****************************************
+;; (instance_instance ?r)
+;; ****************************************
+(unary instance_instance)
+(text_definition type_type "unary predicate which holds over relations whose domain and range are instances")
+;; @Axiom: instance_instance relations hold between instances
+(<=> (instance_instance ?r)
+     (and (forall (?a ?b)
+                  (=> (?r ?a ?b)
+                      (and (instance ?a)
+                           (instance ?b))))
+          (forall (?a ?b)
+                  (=> (?r ?a ?b ?t)
+                      (and (instance ?a)
+                           (instance ?b))))))
+;; @Axiom: instance_instance holds only for relations
+(=> (instance_instance ?r)
+    (relation ?r))
+
+;; ========================================
+;; META-RELATIONS
+;; ========================================
+
+;; ****************************************
+;; (subrelation ?relation ?parent_relation)
+;; ****************************************
+(metarelation subrelation)
+(related_synonym subrelation subproperty)
+(related_synonym subrelation subPropertyOf)
+(text_definition subrelation "a transitive meta-level relation between two relations r1 and r2, such that if r1 holds between a and b (optionally: t) then r2 must hold between a and b (t)")
+(example subrelation (subrelation agent_in participates_in) "RO")
+(example subrelation (subrelation proper_part_of part_of) "RO")
+(example subrelation (subrelation negatively_regulates regulates) "GO: Every negative regulation relationship is necessarily a regulation relationship")
+(transitive subrelation)
+;; @Axiom: If a binary relation holds, binary subrelations necessarily hold [derived from transitivity axiom]
+(=> (and (subrelation ?r1 ?r2)
+         (?r1 ?x ?y))
+    (?r2 ?x ?y))
+;; @Axiom: If a ternary relation holds, ternary subrelations necessarily hold [derived from transitivity axiom]
+(=> (and (subrelation ?r1 ?r2)
+         (?r1 ?x ?y ?t))
+    (?r2 ?x ?y ?t))
+;(=> (and (subrelation ?x ?y)
+;         (subrelation ?y ?z))
+;    (subrelation ?x ?z))
+(syntax_translation obo "[Typedef] id:sub-id ... is_a:super-id" (subrelation sub-id super-id))
+
+
+;; EXAMPLE: (all_some part_of all_times part_of) (holds part_of cell_nucleus cell)
+;;
+;; most relations follow the OBO-RO all-some pattern
+;; ie ALL instances of U1 stand in relation ?rel to SOME instance U2 at ALL times
+(metarelation all_some_all_times)
+(subrelation all_some_all_times all_some)
+(functional all_some_all_times)
+(inverse_functional all_some_all_times)
+(example all_some_all_times (all_some_all_times part_of_some part_of) "RO")
+(example all_some_all_times 
+	 (=> (part_of_some nucleus cell) 
+	     (forall (?n ?t) (=> 
+			      (instance_of ?n nucleus ?t) 
+			      (exists (?c) (and (instance_of ?c cell ?t)
+						(part_of ?n ?c ?t))))))
+	 "GO")
+(text_definition all_some_all_times "relates a type-level relation <i>tr</i> to its instance-level counterpart <b>ir</b>, in a temporally invariant way such that for two types, A and B, related by <i>tr</i>, it is the case that all instances of A are related by <b>ir</b> to some instance of B at all times for which the instance of A exists")
+(comment all_some_all_times "The examples here assume the type-level relation is indicated using the suffix '_some', but best practice has not yet been decided")
+;; @Axiom: all_some_all_times holds between an instance-instance relation and a type-type relation
+(=> (all_some_all_times ?tr ?ir)
+    (and (instance_instance ?ir)
+	 (type_type ?tr)))
+;; @Axiom: if an all-some-all-times relations holds at the type level between A and B, it holds for all instances of A to some instance of B at all times that the instance of A exists
+(=> (all_some_all_times ?tr ?ir)
+    (=> (and (?tr ?A ?B)
+             (instance_of ?ai ?A ?t))
+        (exists (?bi)
+                (and
+                 (instance_of ?bi ?B ?t)
+                 (?ir ?ai ?bi ?t)))))
+(syntax_translation obo "[Typedef] id:rel-id ... all_some_all_times:irel-id" (all_some_all_times rel-id irel-id))
+
+
+(metarelation all_some)
+(text_definition all_some "relates a type-level relation <i>tr</i> to its instance-level counterpart <b>ir</b>, in an atemporal way, such that for two types, A and B, related by <i>tr</i>, it is the case that all instances of A are related by <b>ir</b> to some instance of B")
+(example all_some (and (all_some part_of_some part_of) 
+                       (part_of_some mitosis M_phase_of_mitotic_cell_cycle)) "RO")
+(comment all_some "Corresponds to an existential restriction in OWL")
+(=> (all_some ?tr ?ir)
+    (instance_instance ?ir))
+(=> (all_some ?tr ?ir)
+    (type_type ?tr))
+(=> (all_some ?tr ?ir)
+    (=> (and (?tr ?A ?B)
+             (instance_of ?ai ?A))
+        (exists (?bi)
+                (and
+                 (instance_of ?bi ?B)
+                 (?ir ?ai ?bi)))))
+(syntax_translation obo "[Typedef] id:rel-id ... all_some:irel-id" (all_some rel-id irel-id))
+
+(metarelation all_only)
+(text_definition all_only "relates a type-level relation <i>tr</i> to its instance-level counterpart <b>ir</b>, in an atemporal way, such that for two types, A and B, related by <i>tr</i>, it is the case that no instances of A are related by <b>ir</b> to something that is not an instance of B")
+;; @Axiom: all_only relates from type level relations
+(=> (all_only ?tr ?ir)
+    (type_type ?tr))
+;; @Axiom: all_only relates to instance level relations
+(=> (all_only ?tr ?ir)
+    (instance_instance ?ir))
+;; @Axiom: all_only definition
+(<=> (all_only ?tr ?ir)
+     (=> (and (?tr ?A ?B)
+              (instance_of ?ai ?A))
+         (not (exists (?bi)
+                      (and
+                       (not (instance_of ?bi ?B))
+                       (?ir ?ai ?bi))))))
+;; @Thereom: propagation of all_only relations over is_a
+(=> (all_only ?tr ?ir)
+    (=> (and (is_a ?A ?B)
+             (?tr ?B ?C))
+        (?tr ?A ?C)))
+;; @Thereom: propagation of all_only relations under is_a
+(=> (all_only ?tr ?ir)
+    (=> (and (?tr ?A ?B)
+             (is_a ?B ?C))
+        (?tr ?A ?C)))
+(syntax_translation obo "[Typedef] id:rel-id ... all_only:irel-id" (all_only rel-id irel-id))
+
+(metarelation all_some_tr)
+(text_definition all_some_tr "relates a type-level relation <i>tr</i> to its instance-level counterpart <b>ir</b>, such that for two types, A and B, related by <i>tr</i>, it is the case that all instances of A stand ing a <b>ir</b> relation to some B for some time, and neither becomes detached or starts in a detached state")
+(expanded_label all_some_tr "time-restricted part_of")
+;;(example all_some_tr (and (all_some_tr tr_part_of_some part_of) 
+;;                          (tr_part_of_some 
+
+;; @Axiom: all_some_tr definition
+(<=> (all_some_tr ?tr ?ir)
+    (=> (and (?tr ?A ?B)
+             (instance_of ?ai ?A ?t))
+        (exists (?bi)
+                (and
+                 (exists (?t1)
+                         (and (instance_of ?bi ?B ?t1)
+                              (?ir ?ai ?bi ?t1)))
+                 (=> (and (exists_at ?ai ?t2)
+                          (exists_at ?b1 ?t2)
+                          (?ir ?ai ?bi ?t2)))))))
+(syntax_translation obo "[Typedef] id:rel-id ... all_some_tr:irel-id" (all_some_tr rel-id irel-id))
+
+(metarelation all_some_in_reference_context)
+(text_definition all_some_in_reference_context "relates a type-level relation <i>tr</i> to its instance-level counterpart <b>ir</b>, such that for two types, A and B, related by <i>tr</i>, it is the case that all instances of A stand in a <b>ir</b> relation to some B where both instances stand in relation r2 to the same entity")
+(comment all_some_in_reference_context "See Neuhaus, Osumi-Sutherland for details")
+(example all_some_in_reference_context
+         (and (all_some_in_reference_context begins_at_end_of_r begins_at_end_of reference_process)
+              (range reference_process life)
+              (begins_at_end_of_r germ_band_retraction embryonic_stage_11))
+         "FBdv")
+(=> (all_some_in_reference_context ?tr ?ir ?rr)
+    (=> (and (?tr ?A ?B)
+             (instance_of ?ai ?A))
+        (exists (?bi)
+                (and
+                 (instance_of ?bi ?B)
+                 (=> (?rr ?ai ?ri)
+                     (?rr ?ai ?ri))
+                 (?ir ?ai ?bi)))))
+
+;; TODO
+
+(metarelation holds_atemporally_between)
+(text_definition holds_atemporally_between "A relation R holds atemporally between two types A and B if for all R(a,b), it is the case that a and b are instances of A and B")
+(example holds_atemporally_between (holds_atemporally_between part_of Occurrent Occurrent) "RO")
+;; @Axiom: holds_atemporally_between definition
+(<=>
+ (holds_atemporally_between ?rel ?U1 ?U2)
+ (=> (?rel ?i1 ?i2)
+     (and (instance_of ?i1 ?U1)
+          (instance_of ?i2 ?U2))))
+
+(metarelation holds_temporally_between)
+(text_definition holds_temporally_between "A relation R holds temporally between two types A and B if for all R(a,b,t), it is the case that a and b are instances of A and B")
+(example holds_temporally_between (holds_temporally_between part_of Continuant Continuant) "RO")
+;; @Axiom: holds_temporally_between definition
+(<=>
+ (holds_temporally_between ?rel ?U1 ?U2)
+ (=> (?rel ?i1 ?i2 ?t)
+     (and (instance_of ?t span:TemporalRegion)
+          (instance_of ?i1 ?U1 ?t)
+          (instance_of ?i2 ?U2 ?t))))
+
+;; ==============================
+;; domain and range constraints
+;; ==============================
+
+(metarelation homeomorphic_for)
+(text_definition homeomorphic_for "A relation is homeomorphic for a particular type if the relation always holds between like types")
+(example homeomorphic_for (homeomorphic_for part_of IndependentContinuant) "BFO")
+(example homeomorphic_for (homeomorphic_for part_of Process) "BFO")
+;; @Axiom: homeomorphic time-indexed relations
+(=> 
+ (homeomorphic_for ?r ?U)
+ (=> (and (?r ?a ?b ?t)
+          (instance_of ?a ?U ?t))
+     (instance_of ?b ?U ?t)))
+;; @Axiom: homeomorphic atemporal relations
+(=> 
+ (homeomorphic_for ?r ?U)
+ (=> (and (?r ?a ?bt)
+          (instance_of ?a ?U))
+     (instance_of ?b ?U)))
+(syntax_translation obo "[Typedef] id:rel-id ... homeomorphic_for: type-id" (homeomorphic_for rel-id type-id))
+
+;; ****************************************
+;; (domain ?rel ?class)
+;; ****************************************
+;; TODO: domain and range for type_type relations
+(metarelation domain)
+(text_definition domain "Constrains relations such that the subject (first argument) of the relation only holds between instances of the specified type")
+;; @Axiom: domain constraints on time-indexed relations
+(=> (and (domain ?rel ?D)
+         (?rel ?i1 ?i2 ?t))
+    (instance_of ?i2 ?D ?t))
+;; @Axiom: domain constraints on atemporal relations
+(=> (and (domain ?rel ?D)
+         (?rel ?i1 ?i2))
+    (instance_of ?i2 ?D))
+(syntax_translation obo "[Typedef] id:rel-id ... domain: type-id" (domain rel-id type-id))
+
+;; ****************************************
+;; (range ?rel ?class)
+;; ****************************************
+(metarelation range)
+(text_definition range "Constrains relations such that the object (second argument) of the relation only holds between instances of the specified type")
+;; @Axiom: range constraints on time-indexed relations
+(=> (and (range ?rel ?R)
+         (?rel ?i1 ?i2 ?t))
+    (instance_of ?i1 ?D ?t))
+;; @Axiom: range constraints on atemporal relations
+(=> (and (range ?rel ?R)
+         (?rel ?i1 ?i2t))
+    (instance_of ?i1 ?D))
+(syntax_translation obo "[Typedef] id:rel-id ... range: type-id" (range rel-id type-id))
+
+(metarelation inverse_of)
+(text_definition inverse_of "holds between two relations such that a sentence of one implies a sentence of the other, with 1st and 2nd arguments swapped.")
+(comment inverse_of "note that this should not be applied to type_type all_some relations")
+(symmetric inverse_of)
+(<=> (inverse_of ?r ?s)
+     (and (=> (?r ?a ?b)
+              (?s ?b ?a))
+          (=> (?r ?a ?b ?t)
+              (?s ?b ?a ?t))))
+
+(metarelation inverse_of_on_instance_level)
+(text_definition inverse_of_on_instance_level "holds between two relations such that their instance level counterparts are inverses.")
+(symmetric inverse_of_on_instance_level)
+;;(comment inverse_of_on_instance_level "note that this can also apply to type level relations. e.g integral_part_of")
+(<=> (inverse_of_on_instance_level ?r ?r2)
+     (and (all_some ?r ?rp)
+          (all_some ?r2 ?rp2)
+          (inverse_of ?r2 ?rp2)))
+          
+
+(metarelation holds_bidirectionally_for)
+(text_definition holds_bidirectionally_for "holds_bidirectionally_for(SR,R,Inv), X SR Y => X R Y and Y Inv X")
+(example holds_bidirectionally_for (holds_bidirectionally_for integral_part_of part_of_some has_part_some))
+(<=> (holds_bidirectionally_for ?sr ?r ?ir)
+     (=> (?sr ?a ?b)
+         (and (?r ?a ?b)
+              (?ir ?b ?a))))
+
+;; ==============================
+;; relation meta-properties
+;; ==============================
+
+;; ****************************************
+;; (functional ?rel)
+;; ****************************************
+(metarelation functional)
+(text_definition functional "A functional relation acts like a function in that the subject relates to a single object.")
+;; @Axiom: functional time-indexed relations
+(=> (and (functional ?rel)
+         (?rel ?x ?y1 ?t)
+         (?rel ?x ?y2 ?t))
+    (equivalent_to ?y1 ?y2))
+;; @Axiom: functional atemporal relations
+(=> (and (functional ?rel)
+         (?rel ?x ?y1)
+         (?rel ?x ?y2))
+    (equivalent_to ?y1 ?y2))
+(syntax_translation obo '[Typedef] id:rel-id ... is_functional: "true"' (functional rel-id))
+
+;; ****************************************
+;; (inverse_functional ?rel)
+;; ****************************************
+(metarelation inverse_functional)
+(text_definition inverse_functional "A inverse_functional relation acts like a function in that the object relates to a single subject.")
+;; @Axiom: inverse_functional time-indexed relations
+(=> (and (inverse_functional ?rel)
+         (?rel ?x1 ?y ?t)
+         (?rel ?x2 ?y ?t))
+    (equivalent_to ?x1 ?x2))
+;; @Axiom: inverse_functional atemporal relations
+(=> (and (inverse_functional ?rel)
+         (?rel ?x1 ?y)
+         (?rel ?x2 ?y))
+    (equivalent_to ?x1 ?x2))
+(syntax_translation obo '[Typedef] id:rel-id ... is_inverse_functional: "true"' (inverse_functional rel-id))
+
+(metarelation bijective)
+(<=> (bijective ?r)
+     (and (functional ?r)
+          (inverse_functional ?r)))
+
+;; ****************************************
+;; (reflexive ?rel)
+;; ****************************************
+(metarelation reflexive)
+(text_definition reflexive "A reflexive relation always holds between an entity and itself")
+;; @Axiom: reflexivity of time-indexed relations: if the relation ever holds for an entity at some time, it holds between that entity and itself at all times
+(=> (and (reflexive ?rel)
+         (exists (?b ?t)
+                 (?rel ?a ?b ?t)))
+    (?rel ?a ?a ?t2))
+;; @Axiom: reflexivity of atemporal relations: if the relation ever holds for an entity, it holds between that entity and itself
+(=> (and (reflexive ?rel)
+         (exists (?b)
+                 (?rel ?a ?b)))
+    (?rel ?a ?a))
+(syntax_translation obo '[Typedef] id:rel-id ... is_reflexive: "true"' (reflexive rel-id))
+
+;; ****************************************
+;; (irreflexive ?rel)
+;; ****************************************
+(metarelation irreflexive)
+(text_definition irreflexive "An irreflexive relation never holds between an entity and itself")
+(=>  (irreflexive ?rel)
+     (not (exists (?x ?t)
+                  (?rel ?x ?x ?t))))
+(=>  (irreflexive ?rel)
+     (not (exists (?x)
+                  (?rel ?x ?x))))
+(syntax_translation obo '[Typedef] id:rel-id ... is_irreflexive: "true"' (reflexive rel-id))
+
+
+;; ****************************************
+;; (transitive ?rel)
+;; ****************************************
+(metarelation transitive)
+(text_definition transitive "If R is transitive, then we can infer a R c from a R b and b R c. If R is time-indexed, then we can infer a R c @t from a R b @t and b R c @t")
+;; @Axiom: transitivity of atemporal relations
+(=>
+ (and (transitive ?rel)
+      (?rel ?X ?Y)
+      (?rel ?Y ?Z))
+ (?rel ?X ?Z))
+;; @Axiom: transitivity of time-indexed relations. The 3rd argument must match to make the inference
+(=>
+ (and (transitive ?rel)
+      (?rel ?x ?y ?t)
+      (?rel ?y ?z ?t))
+ (?rel ?x ?z ?t))
+(syntax_translation obo '[Typedef] id:rel-id ... is_irreflexive: "true"' (reflexive rel-id))
+
+
+;; ****************************************
+;; (symmetric ?rel)
+;; ****************************************
+(metarelation symmetric)
+;; TODO translate to iff
+(=>
+ (and (symmetric ?rel)
+      (?rel ?i1 ?i2 ?t))
+ (?rel ?i2 ?i1 ?t))
+
+(=>
+ (and (symmetric ?rel)
+      (?rel ?i1 ?i2))
+ (?rel ?i2 ?i1))
+(syntax_translation obo '[Typedef] id:rel-id ... is_symmetric: "true"' (symmetric rel-id))
+
+;; ****************************************
+;; (antisymmetric ?rel)
+;; ****************************************
+(metarelation antisymmetric)
+(text_definition antisymmetric "a binary relation R is antisymmetric if, for all a and b, if a is R to b and b is R to a, then a = b.")
+(<=>
+ (antisymmetric ?rel)
+ (=> (and (?rel ?i1 ?i2 ?t)
+          (?rel ?i2 ?i1 ?t))
+     (equivalent_to ?i1 ?i2)))
+
+(<=>
+ (antisymmetric ?rel)
+ (=> (and (?rel ?U1 ?U2)
+          (?rel ?U2 ?U1))
+     (equivalent_to ?U1 ?U2)))
+(syntax_translation obo '[Typedef] id:rel-id ... is_anti_symmetric: "true"' (antisymmetric rel-id))
+
+;; ****************************************
+;; (cyclic ?rel)
+;; ****************************************
+(metarelation cyclic)
+(text_definition cyclic "A cyclic relation is one which holds bidirectionally between two non-identical entities")
+(comment cyclic "The definition of cyclicity involves two entities. Note that for transitive relations longer chains are accounted for by transitivity axioms.")
+;; @Axiom: symmetricality implies cyclicity
+(=> (symmetric ?rel) (cyclic ?rel))
+;; @Axiom: cylic definition
+(<=>
+ (cyclic ?rel)
+ (exists (?X ?Y)
+         (and (?rel ?X ?Y)
+              (?rel ?Y ?X)
+              (not (equivalent_to ?X ?Y)))))
+(syntax_translation obo '[Typedef] id:rel-id ... is_cyclic: "true"' (cyclic rel-id))
+
+;; ****************************************
+;; (directed_path_over ?crel ?rel)
+;; ****************************************
+(metarelation directed_path_over)
+(text_definition directed_path_over "S directed_path_over R iff for all a_1,a_n it is the case that S(a_1,a_n) implies a chain R(a_1,a_2),R(a_2,a_3),...,R(a_{n-1},a_n). Vertices may be visisted more than once. If the chain includes R(x,y) then it may not contain R(y,x), even if R is symmetric - the path is directed.")
+(comment directed_path_over "note that this is not the same as the transitive version of the relation. S(x,x) only holds for cyclic structures.")
+;; TODO: definition
+
+;; ****************************************
+;; (directed_simple_path_over ?crel ?rel)
+;; ****************************************
+(metarelation directed_simple_path_over)
+(text_definition directed_simple_path_over "S directed_simple_path_over R iff for all a_1,a_n it is the case that S(a_1,a_n) implies a chain R(a_1,a_2),R(a_2,a_3),...,R(a_{n-1},a_n). Vertices may be not be visisted more than once, with the exception of the start vertex.")
+(is_a directed_simple_path_over directed_path_over)
+;; TODO: definition
+;; DEPRECATED - as the path itself is not an argument it is irrelevant if it is simple or not
+
+;; ****************************************
+;; (cyclic_over ?crel ?rel)
+;; ****************************************
+(metarelation cyclic_over)
+(text_definition cyclic_over "S cyclic_over R iff there is a simple directed path over R starting and ending at v1 over vertices in V, then S holds between all pairs in V")
+(example cyclic_over (cyclic_over connected_in_cycle_with directly_connected_to) "A ring of 6 carbon instances connected c1-c2,...,c6-c1. Each is connected_in_cycle_with all the others")
+
+
+;; ****************************************
+;; (acyclic ?rel)
+;; ****************************************
+(metarelation acyclic)
+(text_definition acyclic "An acyclic relation is a relation for which the cylicity property does not hold.")
+(=>
+ (acyclic ?rel)
+ (not (cyclic ?rel)))
+
+;; ****************************************
+;; (proper_subrelation ?rel)
+;; ****************************************
+(metarelation proper_subrelation)
+(text_definition proper_subrelation "An irreflexive subrelation predicate")
+(=>  (proper_subrelation ?pr ?r)
+     (and (irreflexive ?pr)
+          (subrelation ?pr ?r)))
+(<=> (and (proper_subrelation ?r1 ?r2)
+	  (?r1 ?x ?y)
+	  (not (= ?x ?y)))
+     (?r2 ?x ?y))
+
+;; ****************************************
+;; (transitive_over ?rel ?over)
+;; ****************************************
+(metarelation transitive_over)
+(transitive transitive_over)
+(text_definition transitive_over "R is transitive_over S if R and S compose to R. i.e. a R b S c implies a R c")
+(example transitive_over (transitive_over regulates part_of) "GO")
+;; @Axiom: transitive_over for time-indexed relations
+(=>
+ (transitive_over ?rel ?over)
+ (=> (and (?rel ?i1 ?i2 ?t)
+          (?over ?i2 ?i3 ?t))
+     (?rel ?i1 ?i3 ?t)))
+;; @Axiom: transitive_over for atemporal relations
+(=>
+ (transitive_over ?rel ?over)
+ (=> (and (?rel ?i1 ?i2)
+          (?over ?i2 ?i3))
+     (?rel ?i1 ?i3)))
+(syntax_translation obo "[Typedef] id:rel-id ... transitive_over: over-id" (transitive_over rel-id over-id))
+
+;; ****************************************
+;; (holds_over_chain ?rel ?rel1 ?rel2)
+;; ****************************************
+(metarelation holds_over_chain)
+(text_definition holds_over_chain "R holds_over_chain R1 R2 iff R1 and R2 compose together to make R. i.e. a R1 b R2 c implies a R c")
+(example holds_over_chain (holds_over_chain inheres_in_part_of inheres_in part_of) "PATO")
+(example holds_over_chain (holds_over_chain starts_during_or_after part_of starts_during) "ZFA")
+;; @Axiom: holds_over_chain for time-indexed relations
+(=>
+ (holds_over_chain ?rel ?r1 r2)
+ (=> (and (?r1 ?i1 ?i2 ?t)
+          (?r2 ?i2 ?i3 ?t))
+     (?rel ?i1 ?i3 ?t)))
+;; @Axiom: holds_over_chain for atemporal relations
+(=>
+ (holds_over_chain ?rel ?r1 r2)
+ (=> (and (?r1 ?i1 ?i2)
+          (?r2 ?i2 ?i3))
+     (?rel ?i1 ?i3)))
+(syntax_translation obo "[Typedef] id:rel-id ... holds_over_chain: rel1-id rel2-id" (holds_over_chain rel-id rel1-id rel2-id))
+
+;; TODO
+;; disjoint_union/N
+;; genus_differentia/N
+;; can we use seqvars here and have these predicates with arbitrary arity?
+
+;; other predicates have no semantics
+;; eg comment/2, annotation/3
+
+;; ****************************************
+;; (disjoint_over ?dr ?r)
+;; ****************************************
+(metarelation disjoint_over)
+(text_definition disjoint_over "R is disjoint_over S if R holds between entities that are not S-siblings.")
+(example disjoint_over (disjoint_over spatially_disconnected_from part_of_some) "If X is spatially disconnected from Y, then there are no Z such that Z part_of_some X and Z part_of_some Y.")
+(=>
+ (disjoint_over ?r ?over)
+ (=> (?r ?a ?b)
+     (not (exists (?x)
+                  (and (?over ?x ?a)
+                       (?over ?x ?b))))))
+(=>
+ (disjoint_over ?r ?over)
+ (=> (?r ?a ?b)
+     (not (exists (?x)
+                  (and (?over ?x ?a ?t)
+                       (?over ?x ?b ?t))))))
+(syntax_translation obo "[Typedef] id:rel-id ... disjoint_over: over-id" (disjoint_over rel-id over-id))
+
+;; ****************************************
+;; (maximal_over ?r ?ov)
+;; ****************************************
+(metarelation maximal_over)
+(text_definition maximal_over "R is maximal_over S iff when R(a,x,y) holds, it is the case that for all b [ b S a implies b S x and b S y].")
+(example maximal_over (maximally_overlaps maximally_overlaps overlaps) "If A maximally_overlaps B and C, all the parts overlapping A also overlap B and C.")
+(=>
+ (maximal_over ?r ?over)
+ (=> (?r ?a ?x ?y)
+     (forall (?b)
+             (?over ?b ?a)
+             (=> (and (?over ?b ?x)
+                      (?over ?b ?y))))))
+
+;; ****************************************
+;; (disjoint_from ?dr ?r)
+;; ****************************************
+(metarelation disjoint_from)
+(symmetric disjoint_from)
+(text_definition disjoint_from "A is disjoint_from B if there is nothing that is an instance_of both A and B (at any one time)")
+(example disjoint_from (disjoint_from embryo larva) "FBbt")
+;; @Axiom: 
+(<=>
+ (disjoint_from ?a ?b)
+ (and (not (exists (?x)
+		   (and (instance_of ?x ?a)
+			(instance_of ?x ?b))))
+      (not (exists (?x)
+		   (and (instance_of ?x ?a ?t)
+			(instance_of ?x ?b ?t))))))
+;; @Theorem: disjoint types do not share is_a children
+(=>
+ (disjoint_from ?a ?b)
+      (not (exists (?x)
+		   (and (is_a ?x ?a ?t)
+			(is_a ?x ?b ?t)))))
+(syntax_translation obo "[Term] id:type-id ... disjoint_from: disj-id" (disjoint_from type-id disj-id))
+
+;;imported:
+;;(relation equivalent_to_to)
+(<=> (and (equivalent_to_to ?A ?B)
+          (instance_of ?i ?A))
+     (instance_of ?i ?B))
+(<=> (and (equivalent_to_to ?A ?B)
+          (instance_of ?i ?B ?t))
+     (instance_of ?i ?A ?t))
+(syntax_translation obo "[_] id:entity-id ... equivalent_to_to: eq-id" (equivalent_to_to entity-id eq-id))
+
+
+;; ****************************************
+;; (equivalent_to ?u (intersection_of ?a ?b)
+;; ****************************************
+(function intersection_of)
+(forall (?P ?Q ?x)
+	(<=> (instance_of ?x (intersection_of ?P ?Q))
+	     (and (instance_of ?x ?P)
+                  (instance_of ?x ?Q)) ))
+(forall (?R ?F ?x)
+	(<=> (instance_of ?x (?R ?F))
+	     (exists (?C)
+		     (and (?C ?R ?F)
+			  (instance_of ?x ?C)))))
+(syntax_translation obo "[Term] id:type-id ... intersection_of: I_1 ... intersection_of: I_n" (equivalent_to type-id (intersection_of (T i_1) (T i_n))))
+
+(function relation_intersection)
+; TODO
+;(forall (?P ?Q ?x)
+;	(<=> ((relation_intersection ?P ?Q) ?a ?b) ;; function in predicate position. Allowed in KIF?
+;	     (and (?P ?a ?b)
+;                  (?Q ?a ?b))))
+(syntax_translation obo "[Typedef] id:rel-id ... intersection_of: I_1 ... intersection_of: I_n" (equivalent_to rel-id (relation_intersection (T i_1) (T i_n))))
+
+(metarelation relation_arity)
+(range relation_arity xsd:integer)
+
+(metarelation relation_min_arity)
+(range relation_min_arity xsd:integer)
+
+(metarelation relation_max_arity)
+(range relation_max_arity xsd:integer)
+
+(metarelation posits)
+
+;; UNA
+(relation namespace)
+(functional namespace)
+(text_definition namespace "Relation between an identifier and a namespace. Each identifier belongs to only one namespace. Labels are unique within namespace. The unique identifier assumption holds within a namespace unless otherwise stated.")
+(comment namespace "Namespaces can also be thought of as ontologies.")
+;(=> (and (namespace ?a ?x)
+;         (namespace ?b ?x)
+;         (unique_identifier_assumption ?x)
+;         (not (= ?a ?b)))
+;    (not (equivalent_to ?a ?b)))
+
+;; @Axiom: identity implies identity of identifiers if Unique Label Assumptions holds within an ontology. 
+(=> (and (namespace ?a ?x)
+         (namespace ?b ?x)
+         (label ?a ?an)
+         (label ?b ?bn)
+         (unique_label_assumption ?x)
+         (not (= ?a ?b)))
+    (not (= ?an ?bn)))
+
+;; @Axiom: identity implies identity of identifiers if Unique Identifier Assumptions holds within an ontology. 
+(=> (and (namespace ?a ?x)
+         (namespace ?b ?x)
+         (identifier ?a ?an)
+         (identifier ?b ?bn)
+         (unique_identifier_assumption ?x)
+         (not (= ?a ?b)))
+    (not (= ?an ?bn)))
+

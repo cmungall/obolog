@@ -1,0 +1,83 @@
+(abstract "Simple mapping to OWL, ignoring temporal arguments")
+
+(<=> (type ?A)
+     (owl:Class ?A))
+
+(<=> (instance ?A)
+     (owl:Individual ?A))
+
+(<=> (relation ?R)
+     (or (owl:ObjectProperty ?A)
+         (owl:DatatypeProperty ?A)))
+
+(<=> (transitive ?R)
+     (owl:TransitiveProperty ?R))
+
+;; @Axiom: is_a treated the same as SubClass, ignoring the temporal part of the definition for continuants
+(<=> (is_a ?A ?b)
+     (owl:SubClassOf ?A ?B))
+
+;; @Axiom: subrelation = subPropertyOf
+(<=> (subrelation ?A ?B)
+     (owl:SubPropertyOf ?A ?B))
+
+(<=> (domain ?R ?X)
+     (owl:domain ?R ?X))
+(<=> (range ?R ?X)
+     (owl:range ?R ?X))
+(<=> (disjoint_from ?A ?B)
+     (owl:DisjointFrom ?A ?B))
+
+;; @Axiom: type-level all-some relation treated as existential restrictions
+(<=> (and (?R ?A ?B)
+          (all_some ?R ?RI))
+     (owl:SubClassOf ?A (owl:someValuesFrom ?RI ?B)))
+
+;; @Axiom: type-level all-only relation treated as universal restrictions
+(<=> (and (?R ?A ?B)
+          (all_only ?R ?RI))
+     (owl:SubClassOf ?A (owl:allValuesFrom ?RI ?B)))
+
+;; @Axiom: intersectionOf
+(<=> (equivalent_to ?A (intersection_of ?P ?Q))
+     (owl:EquivalentClass ?A (owl:intersectionOf ?P ?Q)))
+
+;; @Axiom: disjoint_over
+(<=> (and (disjoint_over ?r ?s)
+          (?r ?A ?B))
+     (owl:SubClassOf (owl:intersectionOf (owl:someValuesFrom ?s ?A)  (owl:someValuesFrom ?s ?B))
+                     (owl:Nothing)))
+
+;; @Axiom: maximal_over
+(<=> (and (maximal_over ?r ?over)
+          (inverse_of ?over ?iover)
+          (?r ?a ?x ?y))
+     (owl:SubClassOf ?a (owl:allValuesFrom ?iover (owl:intersectionOf (owl:someValuesFrom ?over ?x) (owl:someValuesFrom ?over ?y))))) 
+
+;; @Theorem: inverse_of, instance level
+(<=> (and (inverse_of ?r ?s)
+          (instance_instance ?r)
+          (?r ?A ?B))
+     (owl:fact ?B ?s ?A))
+
+;; @Theorem: inverse_of, type level
+(<=> (and (inverse_of ?r ?s)
+          (type_type ?r)
+          (all_some ?r ?ri)
+          (?r ?A ?B))
+     (and (owl:SubClassOf ?A (owl:allValuesFrom ?RI ?B))
+          (owl:SubClassOf ?B (owl:allValuesFrom ?RI ?A))))
+
+
+;; @Axiom: homeomorphic_for
+(<=> (homeomorphic_for ?r ?A)
+     (owl:SubClassOf ?A (owl:allValuesFrom ?r ?A)))
+
+;; @Axiom: transitive_over
+(<=> (transitive_over ?r ?s)
+     (owl:SubPropertyOf ?r (SubObjectPropertyChain ?r ?s)))
+
+;; @Axiom: holds_over_chain
+(<=> (holds_over_chain ?r ?s ?t)
+     (owl:SubPropertyOf ?r (SubObjectPropertyChain ?s ?t)))
+

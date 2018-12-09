@@ -1,0 +1,102 @@
+\def\ObologCL{\pr{obolog$^{CL}$}}
+\def\ObologCore{\pr{obolog$^{Core}$}}
+\def\ObologACore{\pr{obolog$^{A/Core}$}}
+\def\ObologA{\pr{obolog$^{A}$}}
+\def\ObologH{\pr{obolog$^{H}$}}
+\def\ObologData{\pr{obolog$^{Data}$}}
+\def\CL{\pr{CL}}
+\def\IKL{\pr{IKL}}
+
+\section{Obolog Sublanguages and Superlanguages}
+
+This section is incomplete
+
+\subsection{\CL}
+
+$\CL$ is the set of all common logic texts
+
+\subsection{\IKL}
+
+$\IKL$ is the set of all IKL texts. Every \CL\ text is an \IKL\ text.
+
+$\CL \subset IKL$
+
+\subsection{\ObologCL}
+
+Any CL text that imports the Obolog predicate definitions is an \ObologCL\ text
+
+$\ObologCL \subset \CL$
+
+\subsection{\ObologCore}
+
+Any \ObologCL\ text that does not use quantified sentences (excluding
+the CL axioms for the Obolog predicates themselves).
+
+\begin{eqnarray*}
+\ObologCore \subset \ObologCL
+\end{eqnarray*}
+
+The suffix ``Core'' denotes a subset that excludes arbitrary quantified sentences.
+
+\subsection{\ObologA}
+
+A subset of \IKL\ in which the \pr{that} function is used for atomic sentences only. 
+
+Every \ObologA\ text is an \IKL\ text:
+\begin{eqnarray*}
+\ObologA \subset \IKL
+\end{eqnarray*}
+
+Every \ObologCL\ text is an \ObologA\ text
+\begin{eqnarray*}
+\ObologCL \subset \ObologA
+\end{eqnarray*}
+
+Again we can define \ObologACore\ as the subset of \ObologA that
+excluded quantified sentences.
+
+\begin{eqnarray*}
+\ObologACore = \ObologA \cap \ObologCore
+\end{eqnarray*}
+
+\subsection{\ObologH\ and \ObologData}
+
+\subsubsection{\ObologH}
+
+Horn clause subset of \ObologCL\. It extends \ObologCore\ by allowing
+certain quantified sentences, specifically those correponding to horn rules.
+
+\begin{eqnarray*}
+\ObologH \subset \ObologCL
+\end{eqnarray*}
+
+%\ObologCoreH \subset \ObologCore \\
+%\ObologCoreH \subset \ObologH
+
+
+\subsubsection{\ObologData}
+
+\begin{eqnarray*}
+\ObologData \subset \ObologH
+\end{eqnarray*}
+
+Datalog subset of \ObologCL\ i.e. only atomic sentences, or
+universally quantified sentences with one term on the LHS, and no
+function symbols.  Query evaluation with Datalog is sound and complete
+and can be done efficiently even for large texts (databases).
+
+%Note: The Obo-Edit reasoner uses a subset of Obolog-Data-Core (no
+%arbitrary horn rules) dealing with types only, augmented with
+%constraints (e.g. for checking disjointness violations).
+
+\subsubsection{Horn Rules}
+
+\input{../obolog-horn-lp}
+
+
+
+
+
+
+
+

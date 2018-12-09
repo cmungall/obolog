@@ -1,0 +1,143 @@
+either restatements of obolog axioms as horn rules, or rules derived from axioms + RO definitionsRule: reflexivity of is\_a
+
+\begin{eqnarray*}
+ \pr{type}(x) &\imp & \pr{is\_a}(x, x) 
+\end{eqnarray*}
+Rule: transitivity of is\_a
+
+\begin{eqnarray*}
+ \pr{is\_a}(a, b) \con \\
+ \pr{is\_a}(b, c) &\imp & \pr{is\_a}(a, c) 
+\end{eqnarray*}
+Rule: equivalence if mutual is\_a
+
+\begin{eqnarray*}
+ \pr{is\_a}(a, b) \con \\
+ \pr{is\_a}(b, a) &\imp & \pr{equiavelent\_to}(a, b) 
+\end{eqnarray*}
+Rule: equivalence if mutual is\_a, inv
+
+\begin{eqnarray*}
+ \pr{equiavelent\_to}(a, b) &\imp & \pr{is\_a}(a, b) 
+\end{eqnarray*}
+Rule: transitivity of subrelation
+
+\begin{eqnarray*}
+ \pr{subrelation}(a, b) \con \\
+ \pr{subrelation}(b, c) &\imp & \pr{subrelation}(a, c) 
+\end{eqnarray*}
+XRule: propagation over/under is\_a for all-some relations
+
+\begin{eqnarray*}
+ \pr{is\_a}(a, b) \con \\
+r(b, c) \con \\
+ \pr{is\_a}(c, d) \con \\
+ \E ri[ \pr{all\_some}(r, ri) ]&\imp &r(a, d) 
+\end{eqnarray*}
+XRule: propagation over/under is\_a for all-only relations
+
+\begin{eqnarray*}
+ \pr{is\_a}(a, b) \con \\
+r(b, c) \con \\
+ \pr{is\_a}(c, d) \con \\
+ \E ri[ \pr{all\_only}(r, ri) ]&\imp &r(a, d) 
+\end{eqnarray*}
+XRule: all-only constraints on subtypes
+
+\begin{eqnarray*}
+ \pr{all\_only}(ru, ri) \con \\
+ \pr{all\_some}(re, ri) \con \\
+ru(b, y) \con \\
+re(a, x) \con \\
+ \pr{is\_a}(a, b) &\imp & \pr{is\_a}(x, y) 
+\end{eqnarray*}
+XRule: transitivity
+
+\begin{eqnarray*}
+ \pr{transitive}(r) \con \\
+r(a, b) \con \\
+r(c, c) &\imp &r(a, c) 
+\end{eqnarray*}
+XRule: inverse\_of
+
+\begin{eqnarray*}
+ \pr{inverse\_of}(r, s) \con \\
+r(a, b) &\imp &r(b, a) 
+\end{eqnarray*}
+Rule: symmetricality of inverse\_of
+
+\begin{eqnarray*}
+ \pr{inverse\_of}(r, s) &\imp & \pr{inverse\_of}(s, r) 
+\end{eqnarray*}
+Rule: symmetricality of disjoint\_from
+
+\begin{eqnarray*}
+ \pr{disjoint\_from}(r, s) &\imp & \pr{disjoint\_from}(s, r) 
+\end{eqnarray*}
+XRule: subrelations
+
+\begin{eqnarray*}
+r(a, b) \con \\
+ \pr{subrelation}(r, s) &\imp &s(a, b) 
+\end{eqnarray*}
+XRule: transitive\_over
+
+\begin{eqnarray*}
+ \pr{transitive\_over}(r, over) \con \\
+r(a, b) \con \\
+over(b, c) &\imp &r(a, c) 
+\end{eqnarray*}
+XRule: holds\_over\_chain
+
+\begin{eqnarray*}
+ \pr{holds\_over\_chain}(r, r1, r2) \con \\
+r1(a, b) \con \\
+r2(b, c) &\imp &r(a, c) 
+\end{eqnarray*}
+XRule: cyclic
+
+\begin{eqnarray*}
+r(a, b) \con \\
+r(b, a) \con \\
+ \n(a = b)&\imp & \pr{cyclic}(r) 
+\end{eqnarray*}
+XRule: functional relations
+
+\begin{eqnarray*}
+ \pr{functional}(r) \con \\
+r(a, b) \con \\
+r(a, c) &\imp & \pr{equivalent\_to}(b, c) 
+\end{eqnarray*}
+XRule: symmetricality
+
+\begin{eqnarray*}
+ \pr{symmetric}(r) \con \\
+r(a, b) &\imp &r(b, a) 
+\end{eqnarray*}
+XRule: domain
+
+\begin{eqnarray*}
+ \pr{domain}(r, x) \con \\
+r(a, b) &\imp & \pr{instance\_of}(a, x) 
+\end{eqnarray*}
+XRule: range
+
+\begin{eqnarray*}
+ \pr{range}(r, x) \con \\
+r(a, b) &\imp & \pr{instance\_of}(b, x) 
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{all\_only}(ru, ri) \con \\
+ru(X, Y) \con \\
+ri(a, b) \con \\
+ \pr{instance\_of}(a,  \pr{Occurrent}) \con \\
+ \pr{instance\_of}(b,  \pr{Occurrent}) \con \\
+ \pr{instance\_of}(a, X) &\imp & \pr{instance\_of}(b, Y) 
+\end{eqnarray*}
+Constraint: disjoint pairs share no is\_a children
+
+\begin{eqnarray*}
+ \pr{is\_a}(a, x) \con \\
+ \pr{is\_a}(b, x) \con \\
+ \pr{disjoint\_from}(a, b) &\imp & \pr{unsatisfiable}(a) 
+\end{eqnarray*}

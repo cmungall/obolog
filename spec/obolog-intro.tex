@@ -1,0 +1,131 @@
+\section{Introduction}
+
+OBO-Format is an exchange format for ontologies and associated
+information. This document provides a formalization of both the syntax
+and semantics of OBO-Format version 1.3.
+
+The syntax is specified as a BNF grammar. The semantics are defined in
+terms of a translation to first order logic - more specifically, to
+the Obolog language, a collection of constructs defined using the
+Common Logic ISO standard.
+
+\subsection{Background}
+
+OBO Format 1.0 was devised in 2001, originally as a successor to the
+original Gene Ontology DAG file format. The original design was
+informed by local pragmatic considerations, and sacrified syntactic
+and semantic rigour in favour of simplicity. OBO Format conceives of
+ontologies in graph-oriented terms, with each node of the graph
+described using a set of tag-value pairs.
+
+OBO Format 1.2. was initiated in 2003 finalized in 2006, and extended
+1.0 with tags borrowed from the OWL (originally DAML+OIL)
+language. In 2007 Ian Horrocks suggested a formalization of both syntax and
+semantics in terms of OWL1 and OWL2.
+
+\subsection{Core Concepts}
+
+\subsubsection{Types, instances, relations and annotations}
+
+The universe of discourse of OBO consists of entities, which are
+divided into types, instances, relations and annotations. This
+division is exhaustive and pairwise disjoint (i.e. every entity is
+exactly one of these things).
+
+Instances are spatiotemporal particulars, whereas types are patterns
+which are shared by collections of like instances. Types are denoted
+by terms such as ``Lung'' or ``Apoptosis''.
+
+Relations obtain between entities. In OBO, relations can hold between
+entities of any kind (even relations). If a relation \pr{Rel} holds
+between two or more entities we write this as a tuple of \pr{Rel}:
+
+\begin{verbatim}
+Rel(Argument1, Argument2, ... ArgumentN)
+\end{verbatim}
+
+Where \pr{Rel} is drawn from a collection of relations, and
+Arguments 1 to N are drawn from the collection of entities.
+
+In cases where the tuple has a single argument, we conventionally call
+the relation a \emph{unary predicate}.
+
+\subsubsection{Ontology Graphs}
+
+Note that whilst tuples can have any number of arguments, OBO is
+geared towards relations that either take 2 or 3 arguments (i.e. 2-ary
+and 3-ary relations). These relations are conceived of in
+graph-theoretic terms, with each entity constituting a node in the
+graph, and each tuple consituting an egde, between the first argument
+(called the ``child'' or ``subject'') and the second argument (called
+the ``parent'', ``object'' or ``target''). The relation acts as
+edge-label, with additional arguments as edge properties.
+
+\subsection{Formalization}
+
+This specification provides the normative formalization of OBO-Format
+in terms of a language called \emph{Obolog}. Obolog is a collection of
+predicates and functions with formally defined semantics that can be
+used to express ontology graphs.
+
+\begin{clist}
+
+\item Every OBO-Format document has a normative interpretation as an Obolog
+text. Obolog is expressed using Common Logic (CL) [TODO: currently
+using KIF, which can be automatically translated to CLIF, a CL
+syntax].
+
+\item Every Obolog text is a CL text(s?).
+
+\item Obolog can be used independently of OBO-Format, any CL syntax can be
+used.
+
+\end{clist}
+
+We distinguish between two sub-languages: Obolog-core and
+Obolog-full. An Obolog-core text is a CL text that contains no
+quantified sentences (possibly other restrictions?).  Obolog-full is
+Obolog-core extended with arbitrary quantified sentences. We
+distinguish between trivial and non-trivial membership in these
+classes depending on whether the text contains any sentences using
+Obolog predicates.
+
+\subsubsection{Translation to other FOL syntaxes}
+
+CL is a highly expressive language for First Order Logic. Other FOL
+syntaxes may disallow certain constructs: for example, variable as
+first argument in a sentence.
+
+It is possible to translate to other syntaxes, such as Prover9 syntax,
+by treating the definitions of Obolog predicates as macro-expansion
+rules. For example, The Obolog definition of transitivity for binary
+relations is as follows:
+
+\begin{eqnarray*}
+ \pr{transitive}(rel) \con \\
+rel(X, Y) \con \\
+rel(Y, Z) &\imp &rel(X, Z) 
+\end{eqnarray*}
+
+We can use this to expand the sentence $transitive(develops\_from)$ to:
+
+\begin{eqnarray*}
+develops\_from(X, Y) \con \\
+develops\_from(Y, Z) &\imp develops\_from(X, Z) 
+\end{eqnarray*}
+
+In future we may define sublanguages based on FOL profile; for example
+Obolog-Horn for Horn rules, which is useful for rule systems and
+relational databases.
+
+\subsubsection{Translation to OWL}
+
+Previous attempts to formalize OBO-Format in terms of OWL did so via a
+direct translation of OBO-Format. This can now be done in terms of Obolog.
+
+\subsubsection{The Relation Ontology and The Basic Formal Ontology}
+
+We attempt to be as ontologically neutral as possible. Certain
+ontological assumptions are assumed: a division between Continuants
+and Occurrents. 
+

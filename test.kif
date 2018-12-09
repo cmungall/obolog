@@ -1,0 +1,14 @@
+(holds symmmetric adj)
+
+(forall (?r)
+        (<=> (holds symmmetric ?r)
+             (forall (?a ?b)
+                     (=> (holds ?r ?a ?b)
+                         (holds ?r ?b ?a)))))
+
+(forall (?a ?b)
+        (<=> (holds sr ?a ?b)
+             (holds sr ?b ?a)))
+
+(holds adj nucleus nuclear_membrane)
+

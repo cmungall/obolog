@@ -1,0 +1,3 @@
+(=>
+ (posits ?a (reified ?rel ?a ?b))
+ (posits 

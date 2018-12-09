@@ -1,0 +1,154 @@
+(abstract "either restatements of obolog axioms as horn rules, or rules derived from axioms + RO definitions")
+
+;; @Rule: reflexivity of is_a
+(=> (type ?x)
+    (is_a ?x ?x))
+
+;; @Rule: transitivity of is_a
+(=> (and (is_a ?a ?b)
+         (is_a ?b ?c))
+    (is_a ?a ?c))
+
+;; @Rule: equivalence if mutual is_a
+(=> (and (is_a ?a ?b)
+         (is_a ?b ?a))
+    (equiavelent_to ?a ?b))
+
+;; @Rule: equivalence if mutual is_a, inv
+(=> (equiavelent_to ?a ?b)
+    (is_a ?a ?b))
+
+;; @Rule: transitivity of subrelation
+(=> (and (subrelation ?a ?b)
+         (subrelation ?b ?c))
+    (subrelation ?a ?c))
+
+;; @XRule: propagation over/under is_a for all-some relations
+(=> (and (is_a ?a ?b)
+         (?r ?b ?c)
+         (is_a ?c ?d)
+         (exists (?ri) (all_some ?r ?ri)))
+    (?r ?a ?d))
+
+;; @XRule: propagation over/under is_a for all-only relations
+(=> (and (is_a ?a ?b)
+         (?r ?b ?c)
+         (is_a ?c ?d)
+         (exists (?ri) (all_only ?r ?ri)))
+    (?r ?a ?d))
+
+;; @XRule: all-only constraints on subtypes
+(=> (and (all_only ?ru ?ri)
+         (all_some ?re ?ri)
+         (?ru ?b ?y)
+         (?re ?a ?x)
+         (is_a ?a ?b))
+    (is_a ?x ?y))
+
+;; @XRule: transitivity
+(=> (and (transitive ?r)
+         (?r ?a ?b)
+         (?r ?c ?c))
+    (?r ?a ?c))
+
+;; @XRule: inverse_of
+(=> (and (inverse_of ?r ?s)
+         (?r ?a ?b))
+    (?r ?b ?a))
+
+;; @Rule: symmetricality of inverse_of
+(=> (inverse_of ?r ?s)
+    (inverse_of ?s ?r))
+
+;; @Rule: symmetricality of disjoint_from
+(=> (disjoint_from ?r ?s)
+    (disjoint_from ?s ?r))
+
+;; @XRule: subrelations
+(=> (and (?r ?a ?b)
+         (subrelation ?r ?s))
+    (?s ?a ?b))
+
+;; @XRule: transitive_over
+(=> (and (transitive_over ?r ?over)
+         (?r ?a ?b)
+         (?over ?b ?c))
+    (?r ?a ?c))
+
+;; @XRule: holds_over_chain
+(=> (and (holds_over_chain ?r ?r1 ?r2)
+         (?r1 ?a ?b)
+         (?r2 ?b ?c))
+    (?r ?a ?c))
+
+;; @XRule: cyclic
+(=> (and (?r ?a ?b)
+         (?r ?b ?a)
+         (not (= ?a ?b)))
+    (cyclic ?r))
+
+;; @XRule: functional relations
+(=> (and (functional ?r)
+         (?r ?a ?b)
+         (?r ?a ?c))
+    (equivalent_to ?b ?c))
+
+;; @XRule: symmetricality
+(=> (and (symmetric ?r)
+         (?r ?a ?b))
+    (?r ?b ?a))
+
+;; ----------------------------------------
+;; INSTANCES
+;; ----------------------------------------
+
+;; @XRule: domain
+(=> (and (domain ?r ?x)
+         (?r ?a ?b))
+    (instance_of ?a ?x))
+
+;; @XRule: range
+(=> (and (range ?r ?x)
+         (?r ?a ?b))
+    (instance_of ?b ?x))
+
+(=> (and (all_only ?ru ?ri)
+         (?ru ?X ?Y)
+         (?ri ?a ?b)
+         (instance_of ?a Occurrent)
+         (instance_of ?b Occurrent)
+         (instance_of ?a ?X))
+    (instance_of ?b ?Y))
+
+(=> (and (genus ?c ?g)
+	 (instance_of ?i ?g)
+	 (forall (?r ?y)
+		 (=> (differentium ?c ?r ?y)
+		     (and (all_some ?r ?ri)
+			  (exists (?i2)
+				  (instance_of ?i2 ?y))))))
+    (instance_of ?i ?c))
+		 
+
+;; ----------------------------------------
+;; CONSTRAINTS
+;; ----------------------------------------
+
+;; @Constraint: disjoint pairs share no is_a children
+(=> (and (is_a ?x ?a)
+         (is_a ?x ?b)
+         (disjoint_from ?a ?b))
+    (unsatisfiable ?a))
+
+;; @Constraint: disjoint pairs share no instances (atemporal)
+(=> (and (instance_of ?x ?a)
+         (instance_of ?x ?b)
+         (disjoint_from ?a ?b))
+    (unsatisfiable ?a))
+
+;; @Constraint: disjoint pairs share no instances at the same time
+(=> (and (instance_of ?x ?a ?t)
+         (instance_of ?x ?b ?t)
+         (disjoint_from ?a ?b))
+    (unsatisfiable ?a))
+

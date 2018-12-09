@@ -1,0 +1,45 @@
+\section{Translating Obolog to OWL}
+
+We provide 3 interpretations for the logical semantics of Obolog.
+
+\begin{clist}
+\item A standard/normative OWL-DL translation, which makes use of ``hidden'' time-slices to get around the lack of n-ary relations in OWL
+\item A simplied OWL-DL translation
+\item An OWL-Full (RDFS) translation, in which types (classes) and type level relations are in the domain of discourse
+\end{clist}
+
+The normative translation is non-trivial. It attempts to do justice to
+the use of 3-ary relations in defining binary type-level relations. It
+is predicated on the widely accepted assumption that Continuants
+(entities exist in whole in any point in time, but can gain or lose
+parts through time) are difficult to deal with in OWL due to all
+relations (properties) being binary.
+
+The translation works within this constraint, and provides an
+interpretation of BFO/OWL in which references to continuant types are
+translated as references to corresponding time-slices.
+
+In addition, we provide an extension translation for obolog-A, and a
+translation for obolog-lex in terms of OWL Annotation Properties.
+
+\subsection{Standard DL Translation}
+
+\input{../owl/obolog-owl-dl-lp}
+
+\subsection{Simplified Translation (not normative)}
+
+\input{../owl/obolog-owl-simple-lp}
+
+\subsection{OWL Full (RDFS) Translation}
+
+\input{../owl/obolog-rdfs-lp}
+
+\subsection{Obolog-lex Translation}
+
+Annotation Properties
+
+\subsection{Obolog-A Translation}
+
+TODO
+
+OWL2 features?

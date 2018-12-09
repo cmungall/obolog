@@ -1,0 +1,525 @@
+\section{OBO Semantics}
+
+\subsection{Mapping to Obolog}
+
+The translation is defined using a translation function T which
+translates (a fragment of) OBO into Obolog. The definition of T is
+often recursive, but it will eventually "ground out" in Obolog. We use
+functional syntax to specify the Obolog sentence. This could equally
+be specified in CLIF.
+
+\subsection{Identifiers}
+
+If an id: tag is not specified in a stanza, an anonymous gensym ID is
+created. Currently the id tag is required for all stanzas, with the
+exception of Annotation stanzas.
+
+\subsection{Imports}
+
+TODO: CL construct?
+
+TODO: selective imports?
+
+\subsection{Translation Table}
+
+\begin{scriptsize}
+\setlongtables
+
+% use longtable: split across multiple pages
+% must use p, as we have verbatim within cells
+\begin{longtable}{ | p{7cm} | p{7cm} |}
+\hline
+OBO Syntax -S & Translation - T(S)
+\\ 
+
+\hline
+\begin{verbatim}
+header stanza-1 ... stanza-n
+\end{verbatim}
+&
+\begin{verbatim}
+T(header) T(stanza-1) ... T(stanza-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+[Typedef]
+ id: type-id
+ tagvals-1
+ ..
+ tagvals-n
+\end{verbatim}
+&
+\begin{verbatim}
+relation(rel-id)
+T(Relation id:rel-id tagvals-1)
+.
+.
+T(Relation id:rel-id tagvals-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+[Term]
+ id: type-id
+ tagvals-1
+ ..
+ tagvals-n
+\end{verbatim}
+&
+\begin{verbatim}
+type(type-id)
+T(Type id:type-id tagvals-1)
+.
+.
+T(Type id:type-id tagvals-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+[Instance]
+ id: type-id
+ tagvals-1
+ ..
+ tagvals-n
+\end{verbatim}
+&
+\begin{verbatim}
+type(type-id)
+T(Instance id:type-id tagvals-1)
+.
+.
+T(Instance id:type-id tagvals-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+[Annotation]
+ id: annot-id
+ relation: rel
+ subject: subj-id
+ object: obj-id
+ argument: 3 arg-3
+ .
+ .
+ argument: n arg-n
+ tagvals-1
+ ..
+ tagvals-n
+\end{verbatim}
+&
+\begin{verbatim}
+annotation(annot-id)
+posits(annot-id 
+ (that subj-id obj-id arg-3 .. arg-n))
+T(Annotation id:annot-id tagvals-1)
+.
+.
+T(Instance id:type-id tagvals-n)
+\end{verbatim}
+\\
+
+% ----------------------------------------
+% LOGIC TAGS
+% ----------------------------------------
+\hline
+\begin{verbatim}
+Type id:type-id
+is_a: is_a-1
+ ..
+is_a: is_a-n
+\end{verbatim}
+&
+\begin{verbatim}
+is_a(type-id is_a-1)
+ .
+ .
+is_a(type-id is_a-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+Relation id:rel-id
+is_a: is_a-1
+ ..
+is_a: is_a-n
+\end{verbatim}
+&
+\begin{verbatim}
+subrelation(rel-id is_a-1)
+ .
+ .
+subrelation(rel-id is_a-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+_ id:entity-id
+relationship: rel-1 arg-1-1 .. arg-1-m
+ ..
+relationship: rel-n arg-n-1 .. arg-1-m
+\end{verbatim}
+&
+\begin{verbatim}
+rel-1(entity-id, arg-1-1, ... arg-1-m)
+ .
+ .
+rel-n(entity-id, arg-n-1, ... arg-n-m)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+Type id:type-id
+intersection_of: args-1
+ ..
+intersection_of: args-n
+\end{verbatim}
+&
+\begin{verbatim}
+equivalent_to(type-id 
+  intersection_of(
+    T(intersection_element:args-1)
+                  .
+                  .
+    T(intersection_element:args-n)))
+
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+intersection_element: type-id
+\end{verbatim}
+&
+\begin{verbatim}
+type-id
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+intersection_element: rel arg-1 .. arg-n
+\end{verbatim}
+&
+\begin{verbatim}
+rel(arg-1 .. arg-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+Relation id:rel-id
+intersection_of: rel-1
+ ..
+intersection_of: rel-n
+\end{verbatim}
+&
+\begin{verbatim}
+equivalent_to(rel-id 
+  relation_intrsection(rel-1 .. rel-n))
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+Type id:type-id
+disjoint_from: disj-1
+ .
+ .
+disjoint_from: disj-n
+\end{verbatim}
+&
+\begin{verbatim}
+disjoint_from(type-id disj-1)
+ .
+ .
+disjoint_from(type-id disj-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+Relation id:rel-id
+disjoint_over: over-1
+ .
+ .
+disjoint_over: over-n
+\end{verbatim}
+&
+\begin{verbatim}
+disjoint_over(rel-id over-1)
+ .
+ .
+disjoint_over(rel-id over-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+Relation id:rel-id
+transitive_over: over-1
+ .
+ .
+transitive_over: over-n
+\end{verbatim}
+&
+\begin{verbatim}
+transitive_over(rel-id over-1)
+ .
+ .
+transitive_over(rel-id over-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+Relation id:rel-id
+holds_over_chain: x-1 y-1
+ .
+ .
+holds_over_chain: x-n y-n
+\end{verbatim}
+&
+\begin{verbatim}
+holds_over_chain(rel-id x-1 y-1)
+ .
+ .
+holds_over_chain(rel-id x-n y-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+Relation id:rel-id
+equivalent_to_chain: x-1 y-1
+ .
+ .
+equivalent_to_chain: x-n y-n
+\end{verbatim}
+&
+\begin{verbatim}
+equivalent_to_chain(rel-id x-1 y-1)
+ .
+ .
+equivalent_to_chain(rel-id x-n y-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+Relation id:relation-id
+inverse_of: inv-1
+ .
+ .
+inverse_of: inv-n
+\end{verbatim}
+&
+\begin{verbatim}
+inverse_of(relation-id inv-1)
+ .
+ .
+inverse_of(relation-id inv-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+Relation id:relation-id
+inverse_of_on_instance_level: inv-1
+ .
+ .
+inverse_of_on_instance_level: inv-n
+\end{verbatim}
+&
+\begin{verbatim}
+inverse_of_on_instance_level(relation-id inv-1)
+ .
+ .
+inverse_of_on_instance_level(relation-id inv-n)
+\end{verbatim}
+\\
+
+% ----------------------------------------
+% METADATA TAGS
+% ----------------------------------------
+
+\hline
+\begin{verbatim}
+_ id:entity-id
+name: name-str
+\end{verbatim}
+&
+\begin{verbatim}
+label(entity-id name-str)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+_ id:entity-id
+is_anonymous: true
+\end{verbatim}
+&
+\begin{verbatim}
+anonymous(entity-id)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+_ id:entity-id
+namespace: namespace-str
+\end{verbatim}
+&
+\begin{verbatim}
+namespace(entity-id namespace-str)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+_ id:entity-id
+alt_id: alt-ref-1
+ .
+ .
+alt_id: alt-ref-n
+\end{verbatim}
+&
+\begin{verbatim}
+alternate_id(entity-id alt-ref-1)
+ .
+ .
+alternate_id(entity-id alt-ref-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+Type id:type-id
+def: def-str def-xref-1 .. def-xref-n
+\end{verbatim}
+&
+\begin{verbatim}
+text_definition(type-id def-str)
+has_source( 
+  (that text_definition(type-id def-str))
+   def-xref-1)
+ .
+ .
+has_source( 
+  (that text_definition(type-id def-str)) 
+   def-xref-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+_ id:entity-id
+synonym: syn-details-1
+ .
+ .
+synonym: syn-details-n
+\end{verbatim}
+&
+\begin{verbatim}
+T(synonym entity-id syn-details-1)
+ .
+ .
+T(synonym entity-id syn-details-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+synonym entity-id 
+ syn-str-n scope-enum type
+ xref-n-1 .. xref-n-m
+\end{verbatim}
+&
+\begin{verbatim}
+T(scope: scope-enum)(entity-id syn-str-1 type)
+has_source( 
+  (that 
+    T(scope: scope-enum)(entity-id 
+                         syn-str-1 type)) 
+  def-xref-1)
+ .
+ .
+has_source( 
+  (that 
+    T(scope: scope-enum)(entity-id 
+                         syn-str-1 type)) 
+  def-xref-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+synonym entity-id 
+ syn-str-n scope-enum
+ xref-n-1 .. xref-n-m
+\end{verbatim}
+&
+\begin{verbatim}
+T(scope: scope-enum)(entity-id syn-str-1)
+has_source(
+ (that 
+   T(scope: scope-enum)(entity-id
+                        syn-str-1))
+  def-xref-1)
+ .
+ .
+has_source( 
+ (that 
+   T(scope: scope-enum)(entity-id 
+                        syn-str-1))
+ def-xref-n)
+\end{verbatim}
+\\
+
+\hline
+\begin{verbatim}
+scope: EXACT
+scope: RELATED
+scope: BROAD
+scope: NARROW
+\end{verbatim}
+&
+\begin{verbatim}
+exact_synonym
+related_synonym
+broad_synonym
+narrow_synonym
+\end{verbatim}
+\\
+
+% ----------------------------------------
+% IDS
+% ----------------------------------------
+
+\hline
+\begin{verbatim}
+id: genus ^ differentium-1 .. differentium-n
+\end{verbatim}
+&
+\begin{verbatim}
+todo
+\end{verbatim}
+\\
+
+
+\hline
+\caption{Translation to Obolog}
+\end{longtable}
+\end{scriptsize}
+
+
+
+

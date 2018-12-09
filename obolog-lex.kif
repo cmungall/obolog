@@ -1,0 +1,77 @@
+(metarelation metarelation)
+(subrelation metarelation relation)
+
+(metarelation label)
+(text_definition label "A human-readable label or name concisely describing the entity")
+(example label (label GO:0005783 "endoplasmic reticulum") "GO")
+(syntax_translation obo "[Term] id:entity-id ... name: entity-label" (label entity-id entity-label))
+
+(metarelation denotes)
+(text_definition denotes "A relation between a reference and a referent in some context")
+
+(metarelation synonym)
+(example synonym (synonym GO:0005783 "ER") "GO")
+;; @Axiom: if there is some context in which a text denotes a referent, then the text is a synonym for that referent
+(<=> (synonym ?U ?text)
+     (exists (?usage)
+             (denotes ?text ?U ?usage)))
+(=> (synonym ?U ?text ?type)
+    (synonym ?U ?text))
+     
+
+(metarelation exact_synonym)
+(example exact_synonym (exact_synonym GO:0005783 "ER") "GO")
+(subrelation exact_synonym synonym)
+;; @Axiom: if a text denotes a referent in all contexts, then the text is an exact_synonym for that referent
+(<=> (exact_synonym ?U ?text)
+     (denotes ?text ?U ?usage))
+(=> (exact_synonym ?U ?text ?type)
+    (exact_synonym ?U ?text))
+(syntax_translation obo "[Term] id:entity-id ... synonym: entity-label EXACT" (exact_synonym entity-id entity-label))
+(syntax_translation obo "[Term] id:entity-id ... synonym: entity-label EXACT type" (exact_synonym entity-id entity-label type))
+
+
+(metarelation narrow_synonym)
+(text_definition narrow_synonym "T is a narrow synonym for E if T refers to something more specific than E")
+(subrelation narrow_synonym synonym)
+(example narrow_synonym (narrow_synonym nuclear_chrosomome "nuclear interphase chromosomes") "GO")
+(<=> (narrow_synonym ?U ?text)
+     (and
+      (exists (?UN)
+	      (and (denotes ?text ?UN ?usage)
+		   (is_a ?UN ?U)))
+      (not (exists (?UB)
+		   (and (denotes ?text ?UN ?usage)
+			(is_a ?U ?UB))))))
+(=> (narrow_synonym ?U ?text ?type)
+    (narrow_synonym ?U ?text))
+(syntax_translation obo "[Term] id:entity-id ... synonym: entity-label NARROW" (narrow_synonym entity-id entity-label))
+
+
+(metarelation broad_synonym)
+(text_definition broad_synonym "T is a broad synonym for E if T refers to something more general than E")
+(subrelation broad_synonym synonym)
+(<=> (broad_synonym ?U ?text)
+     (and (exists (?UB)
+		  (and (denotes ?text ?UN ?usage)
+		       (is_a ?U ?UB)))
+	  (not (exists (?UN)
+		       (and (denotes ?text ?UN ?usage)
+			    (is_a ?UN ?U))))))
+(=> (broad_synonym ?U ?text ?type)
+    (broad_synonym ?U ?text))
+(syntax_translation obo "[Term] id:entity-id ... synonym: entity-label BROAD" (broad_synonym entity-id entity-label))
+
+
+(metarelation related_synonym)
+(text_definition related_synonym "T is a related synonym for E if E is a synomym for T, neither broad nor narrow")
+(subrelation related_synonym synonym)
+(=> (related_synonym ?U ?text ?type)
+    (related_synonym ?U ?text))
+(syntax_translation obo "[Term] id:entity-id ... synonym: entity-label RELATED" (related_synonym entity-id entity-label))
+
+(metarelation text_definition)
+(text_definition text_definition "A human-readable natural language description of the entity, stating both necessary and sufficient conditions.")
+
+(metarelation comment)
+(text_definition comment "human-readable notes concerning the entity, distinct from a text definition.")

@@ -1,0 +1,260 @@
+(abstract "Mapping to OWL, tackles n-ary arguments. This mapping preserves the meaning of continuants yets avoids unneccessary reference to SpatioTemporalRegions in source OWL ontologies, by re-interpreting the owl membership/type relation in the context of continuants")
+
+;; ----------------------------------------
+;; Subsubsection: FUNCTIONS
+;; ----------------------------------------
+(subsubsection "Functions" "Functions used in the OWL-DL Translation")
+
+(function time_slice)
+(text_definition time_slice "Take a continuant type as argument and returns the unique type that represents the corresponding SpatioTemporalRegion.")
+(example time_slice (= (time_slice Heart) HeartSpatioTemporalRegion))
+(type_domain time_slice Continuant)
+(type_range time_slice SpatioTemporalRegion)
+;; @Axiom: time_slice maps a continuant to a ST Region
+(forall (?C ?S)
+        (=> (= (time_slice ?C) ?S)
+            (is_a ?S SpatioTemporalRegion)))
+
+(function slice_of)
+(text_definition slice_of "Take an instance of a time slice and returns the instance of the corresponding continuant.")
+(example slice_of (= (slice_of john_at_2pm_today) john))
+(domain slice_of SpatioTemporalRegion)
+(range slice_of Continuant)
+
+(function at)
+(text_definition at "Take an instance of a continuant and a time, and return the instance of the corresponding time-slice.")
+(example at (= (at john 2pm_today) john_at_2pm_today))
+;; exists_at?
+;; @Axiom: inverse
+(forall (?c ?t) 
+        (= (slice_of (at ?c ?t)) ?c))
+
+(metarelation relslice)
+(text_definition relslice "relates a slice-relation to the corresponding continuant relation")
+(comment relslice "OWL implicitly refers to relslices. However, there is no need to directly reference them in an OWL ontology.")
+(example relslice (relslice st_located_in located_in))
+(=> (relslice ?sr ?r)
+    (and (domain ?sr Occurrent)
+         (range ?sr Occurrent)
+         (not (and (domain ?r Occurrent)
+                   (range ?r Occurrent)))))
+
+;; ----------------------------------------
+;; OWL CONVERSION AXIOMS: Instantiation and instance-level relations
+;; ----------------------------------------
+(subsubsection "OWL Conversion Axioms" "Instantiation and instance-level relations")
+
+;; OWL Relations
+(metarelation owl:type)
+(comment owl:type "We use a predicate of owl:type rather that a unary predicate to avoid clashes between obolog and owl predicates")
+(comment (<=> (owl:type ?i ?C) (?C ?i)))
+
+(metarelation owl:fact)
+(comment owl:fact "We use a predicate of owl:fact rather than binary predicates to avoid clashes between obolog and owl predicates. Also note we make the property the 2nd argument, consistent with RDF")
+(comment (<=> (owl:fact ?i ?r ?j) (?r ?i ?j)))
+
+;; @Axiom: OWL instantiation of Continuants.
+;; i owl-type continuant C iff i instance_of time_slice(C).
+;; owl talk of continuants is always interpreted as owl talk of time slices of continuants
+(<=> (and (owl:type ?i ?C)
+          (owl:type ?i Continuant))
+     (instance_of ?i (time_slice ?C)))
+
+;; @Example: OWL references the continuant Heart are treated formally as references to 4D Hearts
+(provable_example
+ (<=> (owl:type heart1234_at_t1 Heart)
+     (instance_of heart1234_at_t1 (time_slice Heart))))
+
+;; @Axiom: re-interpret owl triples between slices as holding between
+;; the slice version of the relation
+(=> (and (owl:fact ?i ?R ?j)
+         (instance_of ?i (time_slice ?A))
+         (instance_of ?j (time_slice ?B))
+         (relslice ?SR ?R))
+    (?SR ?i ?j))
+
+;; @Example: 
+(provable_example
+ (=> (and (owl:type person1 Human)
+          (owl:type heart1 Heart)
+          (occurs_at person1 now)
+          (occurs_at heart1 now)
+          (relslice st_located_in located_in)
+          (owl:fact heart1 located_in person1))
+     (st_located_in heart1 person1)))
+
+;; ----------------------------------------
+;; OWL CONVERSION AXIOMS: Type level relations
+;; ----------------------------------------
+(subsubsection "OWL Conversion Axioms" "Type-level relations")
+
+;; @Axiom: type-level all-some relation treated as existential restrictions
+;; Can we prove this and make it a theorem?
+(=> (and (?R ?A ?B)
+         (all_some_all_times ?R ?RI))
+    (owl:SubClassOf ?A (owl:someValuesFrom ?RI ?B)))
+
+;; @Proof:
+;; just restating obolog axiom...
+(=> (and (?R ?A ?B)
+         (all_some_all_times ?R ?RI))
+    (=> (instance_of ?i ?A ?t)
+        (exists (?j)
+                (and (instance_of ?j ?B ?t)
+                     (?RI ?i ?j ?t)))))
+;; @Proof:
+;; ..with time slices. use 'at' function
+(=> (and (?R ?A ?B)
+         (all_some_all_times ?R ?RI))
+    (=> (instance_of (at ?i ?t) (time_slice ?A))
+        (exists (?j)
+                (and (instance_of (at ?j ?t) (time_slice ?B))
+                     (?RI ?i ?j ?t)))))
+;; @Proof:
+;; ..transform relation
+(=> (and (?R ?A ?B)
+         (all_some_all_times ?R ?RI))
+    (=> (and (instance_of (at ?i ?t) (time_slice ?A))
+             (relslice ?SRI ?RI))
+        (exists (?j)
+                (and (instance_of (at ?j ?t) (time_slice ?B))
+                     (?SRI (at ?i ?t) (at ?j ?t))))))
+;; @Proof:
+;; ..back to owl -convert to owl:type
+(=> (and (?R ?A ?B)
+         (all_some_all_times ?R ?RI))
+    (=> (and (owl:type (at ?i ?t) ?A)
+             (relslice ?SRI ?RI))
+        (exists (?j)
+                (and (owl:type (at ?j ?t) ?B)
+                     (?SRI (at ?i ?t) (at ?j ?t))))))
+;; @Proof:
+;; ..back to owl -  relation
+(=> (and (?R ?A ?B)
+         (all_some_all_times ?R ?RI))
+    (=>  (owl:type (at ?i ?t) ?A)
+         (exists (?j)
+                 (and (owl:type (at ?j ?t) ?B)
+                      (owl:fact ?RI (at ?i ?t) (at ?j ?t))))))
+;; @Proof:
+;; we can replace functions with variables.
+;; End result looks like an owl restriction axiom...
+(=> (and (?R ?A ?B)
+         (all_some_all_times ?R ?RI))
+    (=>  (owl:type ?x ?A)
+         (exists (?y)
+                 (and (owl:type ?y ?B)
+                      (owl:fact ?RI ?x ?y)))))
+
+;; @Example: 
+(provable_example
+ (=> (and (located_in_some Brain Skull)
+          (all_some_all_times located_in_some located_in))
+     (owl:SubClassOf Brain (owl:someValuesFrom located_in Skull))))
+
+;; @Axiom: type-level all-only relation treated as universal restrictions
+;; Can we prove this and make it a theorem?
+(=> (and (?R ?A ?B)
+         (all_only ?R ?RI))
+    (owl:SubClassOf ?A (owl:allValuesFrom ?RI ?B)))
+
+;; @Axiom: time-restricted type level relations
+(=> (and (?R ?A ?B)
+         (all_some_tr ?R ?RI))
+    (owl:SubClassOf ?A (owl:allValuesFrom ?RI ?B)))
+
+
+
+;; ----------------------------------------
+;; AXIOMS RELATING TIME-SLICES TO CONTINUANTS
+;; ----------------------------------------
+(subsubsection "Axioms relating time-slices to continuants" "This subsubsection....")
+
+;; @Axiom: relating instantiation of time slices to instantiation of continuants
+;; i instance_of time_slice(C) iff slice_of(i) instance_of C at some time
+(<=>  (instance_of ?i (time_slice ?C))
+      (exists (?t)
+              (instance_of (slice_of ?i) ?C ?t)))
+
+;; i instance_of time_slice(C) and i hasDuration d iff slice_of(i) instance_of C at t for all t in d
+(<=> (and (instance_of ?i (time_slice ?C))
+          (t:hasDuration ?i ?d))
+     (forall (?t)
+             (=> (during ?t ?d)
+                 (instance_of (slice_of ?i) ?C ?d))))
+(provable_example
+ (=> (and (owl:type heart1234 Heart)
+          (owl:fact heart1234 t:hasDuration range_987))
+     (forall (?t)
+             (=> (during ?t range_987)
+                 (instance_of (slice_of heart1234) Heart ?t)))))
+
+;; @Axiom: converting relations between 2 slices to relations between continuants
+(<=> (and (instance_of ?i (time_slice ?A))
+          (instance_of ?j (time_slice ?B))
+          (occurs_at ?i ?t)
+          (occurs_at ?j ?t)
+          (?SR ?i ?j))
+     (and (relslice ?SR ?R)
+          (?R (slice_of ?i) (slice_of ?j) ?t)))
+
+
+;; use located_in to illustrate
+(provable_example
+ (=> (and (owl:type person1 Human)
+          (owl:type heart1 Heart)
+          (occurs_at person1 now)
+          (occurs_at heart1 now)
+          (owl:fact heart1 located_in person1))
+     (and (instance_of person1 Human now)
+          (instance_of heart1 Heart now)
+          (located_in (slice_of heart1) (slice_of person1) now))))
+
+;; @Axiom: converting relations between slice and non-slice to relations between continuant and occurrent
+(<=> (and (instance_of ?i (time_slice ?A))
+          (not (instance_of ?j (time_slice ?B)))
+          (occurs_at ?i ?t)
+          (?SR ?i ?j))
+     (and (relslice ?SR ?R)
+          (?R (slice_of ?i)  ?j ?t)))
+
+(provable_example 
+ (=> (and (owl:type heart1 Heart)
+          (owl:type heartdev1 HeartDevelopment)
+          (occurs_at heart1 now)
+          (owl:fact heart1 participates_in heartdev1))
+     (participates_in heart1 heartdev1 now)))
+
+;; @Axiom: succession of time-slices indicates equality of continuants
+(<=> (and (instance_of ?i (slice_of ?A))
+          (instance_of ?j (slice_of ?B))
+          (preceded_by ?j ?i))
+     (= (slice_of ?i) (slice_of ?j)))
+
+;; Theorem?
+(<=> (and (instance_of ?i (slice_of ?A))
+          (instance_of ?j (slice_of ?B))
+          (occurs_at ?i ?t1)
+          (occurs_at ?j ?t2)
+          (preceded_by ?j ?i))
+     (and (instance_of (slice_of ?i) ?A ?t1)
+          (instance_of (slice_of ?j) ?B t2)
+          (= (slice_of ?i) (slice_of ?j))))
+
+(provable_example 
+ (=> (and (owl:type heart1 Heart)
+          (owl:type heart2 ExtractedHeart)
+          (occurs_at heart1 t1)
+          (occurs_at heart2 t2)
+          (precededed_by t2 t1)
+          (owl:fact heart2 preceded_by heart1))
+     (and (instance_of (slice_of heart1) Heart t1)
+          (instance_of (slice_of heart2) ExtractedHeart t2)
+          (= (slice_of heart1) (slice_of heart2)))))
+
+;; @Axiom: transformation_of
+;; In RO, transformation_of is a type-level relation only. 
+;; Should this go in RO?
+(<=> (transformation_of ?A ?B)
+     (preceded_by (time_slice ?A) (time_slice ?B)))
+ 

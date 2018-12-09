@@ -1,0 +1,619 @@
+<?xml version="1.0"?>
+
+<html>
+  <head>
+    <title>OBO Relation Ontology: obolog</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+    <link rel="stylesheet" href="stylesheet.css" type="text/css"></link>
+    <link rel="stylesheet" href="../stylesheet.css" type="text/css"></link>
+    <link rel="shortcut icon" href="http://www.obofoundry.org/images/favicon.ico" type="image/x-icon"></link></head>
+  <body><div id="header">
+  <span id="floatright">
+    <a href="/" title="Home">Home</a>
+
+    |
+    <script type="text/javascript">
+      obfuscate("lists.sourceforge.net","obo-relations","Contact");
+    </script>
+  </span>
+
+  <a class="image" href="http://www.obofoundry.org" title="The Open Biomedical Ontology Foundry"><img class="middle" src="http://www.obofoundry.org/images/OBO-egg.gif" width="64" alt="Obolog" class="image"></a>
+
+  Obolog
+
+</div>
+<div id="menu">
+
+  <ul>
+
+    <li>
+      <a href="/ontologies.shtml"
+	 title="OBO Foundry ontologies">Ontologies</a>
+      <ul>
+	
+	<li>
+	  <a href="/crit.shtml"
+	     title="The founding principles of the OBO Foundry">Principles</a>
+	</li>
+
+	<li>
+	  <a href="/"
+	     title="The table of OBO Foundry ontologies">Table</a>
+	</li>
+
+	<li>
+	  <a href="http://www.berkeleybop.org/ontologies"
+	     title="Download ontologies">Downloads</a>
+	</li>
+	<li>
+
+	  <a href="http://sourceforge.net/cvs/?group_id=76834"
+	     title="Go to the ontology CVS repository">OBO CVS repository</a>
+	</li>
+      </ul>
+    </li>
+    
+    <li>
+      <a href="/resources.shtml"
+	 title="OBO Tools and Resources">Resources</a>
+      <ul>
+	<li>
+
+	  <a href="/index.cgi?show=mappings"
+	     title="View prospective ontologies in the foundry">Mapping</a>
+	</li>
+	<li>
+	  <a href="http://oboedit.org/"
+	     title="OBO-Edit's homepage">Tools</a>
+	</li>
+	<li>
+	  <a href="/literature.shtml"
+	     title="OBO Foundry references">Literature</a>
+
+	</li>
+	<li>
+	  <a href="http://sourceforge.net/projects/obo"
+	     title="Go to the project homepage on SourceForge.net">OBO
+	 SourceForge home</a>
+	</li>
+      </ul>
+    </li>
+    
+    <li>
+      <a href="/participate.shtml"
+	 title="How to participate in OBO Foundry">Participate</a>
+
+      <ul>
+	<li>
+	  <a href="/join.shtml"
+	     title="How to join the OBO Foundry">Join</a>
+	</li>
+	<li>
+	  <a href="http://www.obofoundry.org/wiki"
+	     title="The OBO Foundry Wiki">OBO Wiki</a>
+	</li>
+	<li>
+
+	  <a href="/cgi-bin/discussion.cgi"
+	     title="OBO Foundry mailing lists and trackers.">Lists and Trackers</a>
+	</li>
+	<li>
+	  <a href="https://lists.sourceforge.net/lists/listinfo/obo-discuss"
+	     title="Subscribe to the official mailing lists">Subscribe</a>
+	</li>
+	<li>
+	  <script type="text/javascript">
+	    obfuscate("lists.sourceforge.net","obo-discuss","Contact");
+	  </script>
+
+	</li>
+      </ul>
+    </li>
+    
+    <li>
+      <a href="/about.shtml"
+	 title="About OBO Foundry">About</a>
+      <ul>
+	<li>
+	  <a href="/coordination.shtml"
+	     title="How the OBO Foundry stays together">Coordination</a>
+
+	</li>
+	<li>
+	  <a href="/related.shtml"
+	     title="Projects related to the OBO Foundry">Related Projects</a>
+	</li>
+	<li>
+	  <a href="/faq.shtml"
+	     title="Frequently asked questions">FAQ</a>
+	</li>
+      </ul>
+
+    </li>
+    
+  </ul>
+</div>
+
+<div class="clearall"></div>
+
+<div class="subnav_empty"></div>
+
+<div class="clearall"></div>
+
+
+    <div id="main_container">
+      <div id="main_content"><p>
+
+An ontology of core relations for use by <a href="http://obofoundry.org">OBO Foundry</a> ontologies. 
+
+</p>
+
+
+        <div class="download">Download: 
+          <span>[
+            <a href="obolog.kif">
+              <b>kif</b></a>]</span>
+          <span>[
+            <a href="obolog.obo">
+              <b>obo</b></a>]</span>
+          <span>[
+            <a href="obolog-ii.obo">
+              <b>obo [I]</b></a>]</span>
+          <span>[
+            <a href="obolog-cc.obo">
+              <b>obo [C]</b></a>]</span>
+          <span>[
+            <a href="obolog.owl">
+              <b>owl</b></a>]</span>
+          <span>[
+            <a href="obolog.prover9">
+              <b>prover9</b></a>]</span> :: See 
+          <a href="#formats">formats</a></div>
+        <div id="summary">
+          <table class="themeTable">
+            <td class="contentRow" colspan="8">OBO Relations : Meta level relations : Summary Table</td>
+            <tr>
+              <th>relation</th>
+              <th>transitive</th>
+              <th>symmetric</th>
+              <th>anti_symmetric</th>
+              <th>reflexive</th>
+              <th>holds_between</th></tr>
+            <tr>
+              <td class="evenRow">
+                <b>
+                  <a href="OBO_REL_TEMP/subrelation.html">subrelation</a></b></td>
+              <td class="evenRow">
+                <b>+</b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td></tr>
+            <tr>
+              <td class="oddRow">
+                <b>
+                  <a href="OBO_REL_TEMP/all_some_all_times.html">all_some_all_times</a></b></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td></tr>
+            <tr>
+              <td class="evenRow">
+                <b>
+                  <a href="OBO_REL_TEMP/all_some.html">all_some</a></b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td></tr>
+            <tr>
+              <td class="oddRow">
+                <b>
+                  <a href="OBO_REL_TEMP/all_only.html">all_only</a></b></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td></tr>
+            <tr>
+              <td class="evenRow">
+                <b>
+                  <a href="OBO_REL_TEMP/all_some_tr.html">all_some_tr</a></b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td></tr>
+            <tr>
+              <td class="oddRow">
+                <b>
+                  <a href="OBO_REL_TEMP/all_some_in_reference_context.html">all_some_in_reference_context</a></b></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td></tr>
+            <tr>
+              <td class="evenRow">
+                <b>
+                  <a href="OBO_REL_TEMP/holds_atemporally_between.html">holds_atemporally_between</a></b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td></tr>
+            <tr>
+              <td class="oddRow">
+                <b>
+                  <a href="OBO_REL_TEMP/holds_temporally_between.html">holds_temporally_between</a></b></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td></tr>
+            <tr>
+              <td class="evenRow">
+                <b>
+                  <a href="OBO_REL_TEMP/homeomorphic_for.html">homeomorphic_for</a></b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td></tr>
+            <tr>
+              <td class="oddRow">
+                <b>
+                  <a href="OBO_REL_TEMP/domain.html">domain</a></b></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td></tr>
+            <tr>
+              <td class="evenRow">
+                <b>
+                  <a href="OBO_REL_TEMP/range.html">range</a></b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td></tr>
+            <tr>
+              <td class="oddRow">
+                <b>
+                  <a href="OBO_REL_TEMP/inverse_of.html">inverse_of</a></b></td>
+              <td class="oddRow"></td>
+              <td class="oddRow">
+                <b>+</b></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td></tr>
+            <tr>
+              <td class="evenRow">
+                <b>
+                  <a href="OBO_REL_TEMP/inverse_of_on_instance_level.html">inverse_of_on_instance_level</a></b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow">
+                <b>+</b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td></tr>
+            <tr>
+              <td class="oddRow">
+                <b>
+                  <a href="OBO_REL_TEMP/functional.html">functional</a></b></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td></tr>
+            <tr>
+              <td class="evenRow">
+                <b>
+                  <a href="OBO_REL_TEMP/inverse_functional.html">inverse_functional</a></b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td></tr>
+            <tr>
+              <td class="oddRow">
+                <b>
+                  <a href="OBO_REL_TEMP/reflexive.html">reflexive</a></b></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td></tr>
+            <tr>
+              <td class="evenRow">
+                <b>
+                  <a href="OBO_REL_TEMP/irreflexive.html">irreflexive</a></b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td></tr>
+            <tr>
+              <td class="oddRow">
+                <b>
+                  <a href="OBO_REL_TEMP/proper_subrelation.html">proper_subrelation</a></b></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td></tr>
+            <tr>
+              <td class="evenRow">
+                <b>
+                  <a href="OBO_REL_TEMP/transitive.html">transitive</a></b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td></tr>
+            <tr>
+              <td class="oddRow">
+                <b>
+                  <a href="OBO_REL_TEMP/symmetric.html">symmetric</a></b></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td></tr>
+            <tr>
+              <td class="evenRow">
+                <b>
+                  <a href="OBO_REL_TEMP/antisymmetric.html">antisymmetric</a></b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td></tr>
+            <tr>
+              <td class="oddRow">
+                <b>
+                  <a href="OBO_REL_TEMP/cyclic.html">cyclic</a></b></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td></tr>
+            <tr>
+              <td class="evenRow">
+                <b>
+                  <a href="OBO_REL_TEMP/acyclic.html">acyclic</a></b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td></tr>
+            <tr>
+              <td class="oddRow">
+                <b>
+                  <a href="OBO_REL_TEMP/transitive_over.html">transitive_over</a></b></td>
+              <td class="oddRow">
+                <b>+</b></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td></tr>
+            <tr>
+              <td class="evenRow">
+                <b>
+                  <a href="OBO_REL_TEMP/holds_over_chain.html">holds_over_chain</a></b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td></tr>
+            <tr>
+              <td class="oddRow">
+                <b>
+                  <a href="OBO_REL_TEMP/disjoint_over.html">disjoint_over</a></b></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td></tr>
+            <tr>
+              <td class="evenRow">
+                <b>
+                  <a href="OBO_REL_TEMP/disjoint_from.html">disjoint_from</a></b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow">
+                <b>+</b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td></tr>
+            <tr>
+              <td class="oddRow">
+                <b>
+                  <a href="OBO_REL_TEMP/relation_arity.html">relation_arity</a></b></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td></tr>
+            <tr>
+              <td class="evenRow">
+                <b>
+                  <a href="OBO_REL_TEMP/relation_min_arity.html">relation_min_arity</a></b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td></tr>
+            <tr>
+              <td class="oddRow">
+                <b>
+                  <a href="OBO_REL_TEMP/relation_max_arity.html">relation_max_arity</a></b></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td>
+              <td class="oddRow"></td></tr>
+            <tr>
+              <td class="evenRow">
+                <b>
+                  <a href="OBO_REL_TEMP/posits.html">posits</a></b></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td>
+              <td class="evenRow"></td></tr>
+            <tr>
+              <th>relation</th>
+              <th>transitive</th>
+              <th>symmetric</th>
+              <th>anti_symmetric</th>
+              <th>reflexive</th>
+              <th>holds_between</th></tr></table></div>
+        <a id="formats"></a><div class="formats">
+
+        <a name="obo"></a>
+        <h2>obo</h2>
+        <p>
+
+Both class and instance level relations are available in .obo format
+<ul>
+  <li>
+        <a href="ro-cc.obo">ro-cc.obo</a> - class level
+  </li>
+  <li>
+        <a href="ro-ii.obo">ro-ii.obo</a> - instance level
+  </li>
+</ul>
+
+Importing RO into your ontology: INSTRUCTIONS HERE
+
+        </p>
+
+        <a name="kif"></a>
+        <h2>kif</h2>
+        <p>
+
+The RO is expressed as first-order logic axioms. These are currently expressed using a subset of FOL using the KIF syntax. Eventually this will be replaced with CLIF/CL-XML.
+
+        </p>
+
+        <a name="owl"></a>
+        <h2>owl</h2>
+        <p>
+
+<a href="ro.owl">ro.owl</a>
+Only the instance level relations are converted to OWL. This ontology imports the OWL version of BFO.
+        
+        </p>
+
+
+        <a name="prover9"></a>
+        <h2>prover9</h2>
+        <p>
+
+Prover9 formulae are generated directly from the KIF axioms. Some axioms are expanded such that they can be used with Prover9/Mace4. For example
+
+<pre>
+(symmetric overlaps)
+</pre>
+
+is expanded to
+
+<pre>
+overlaps(x,y) -> overlaps(y,x)
+</pre>
+
+<ul>
+
+ <li>
+  <a href="ro.prover9">ro.prover9</a> -- the core RO
+ </li>
+
+ <li>
+  <a href="bfo_ro.prover9">bfo_ro.prover9</a> -- RO and BFO axioms combined
+ </li>
+
+</ul>
+
+TEST FILES HERE
+
+        </p>
+
+</div>
+</div>
+      <h1>Relation Details</h1>
+      <p>Note both class 
+        <i> and </i> instance level relations are listed here for completeness</p>
+      <div id="detail"></div></div>
+    <div id="sidebar_container">
+      <div id="sidebar_content">
+<div class="content_box_head_blue">
+  Quick Links
+
+</div>
+
+<div class="content_box_blue">
+  
+  <p class="quick_link">
+    <img src="images/star.gif" alt=""  class="icon_green"/>
+    <a href="http://sourceforge.net/tracker/?group_id=76834&amp;atid=947684">Request Tracker</a>
+  </p>
+ 
+  <p class="quick_link">
+    <img src="images/star.gif" alt=""  class="icon_green"/>
+    <a href="http://lists.sourceforge.net/lists/listinfo/obo-relations">Mailing List</a>
+
+  </p>
+
+  <p class="quick_link">
+    <img src="images/star.gif" alt=""  class="icon_green"/>
+    <a href="http://www.bioontology.org/wiki/index.php/RO:Main_Page">Wiki</a>
+  </p>
+
+  <p class="quick_link">
+    <img src="images/icon_star.gif" alt=""  class="icon_green"/>
+
+     <a href="http://genomebiology.com/2005/6/5/R46">Relations in Biomedical Ontologies</a> in <i>Genome Biology</i> 2005, 6:R46
+  </p>
+
+  <p class="quick_link">
+    <img src="images/icon_star.gif" alt=""  class="icon_green"/>
+
+     <a href="#formats">Download</a>
+  </p>
+
+</div>
+
+<div class="content_box_head_blue">
+  External resources
+</div>
+
+<div class="content_box_blue">
+  
+  <table>
+    <tr>
+      <td>
+	<img src="images/arrow_diagonal.gif" alt=""  class="icon_green_top"/>    
+      </td>
+
+      <td>
+	<a href="http://www.ifomis.org/bfo">BFO</a>, The Basic Formal Ontology
+      </td>
+    </tr>
+  </table>
+  
+  <table>
+    <tr>
+      <td>
+	<img src="images/arrow_diagonal.gif" alt=""  class="icon_green_top"/>    
+      </td>
+      <td>
+	<a href="http://obofoundry.org/cgi-bin/detail.cgi?id=relationship">RO Info Page</a> on <a href="http://obofoundry.org">The OBO Foundry</a> website
+      </td>
+    </tr>
+  </table>
+  
+</div>
+
+</div></div></body></html>

@@ -1,0 +1,962 @@
+\subsection{ \pr{type}}
+\emph{unary predicate which holds over types. Types are patterns in reality, and each type is instantiated by at least one instance at some time.}
+
+Note that types are within the domain of discourse in Obolog. Relations can hold between types.
+
+\subsubsection{Examples}
+\begin{clist}
+\item FMA : \begin{eqnarray*}
+ \pr{type}( \pr{Left\_hand}) 
+\end{eqnarray*}
+
+\item FMA : \begin{eqnarray*}
+ \pr{type}( \pr{Lung}) 
+\end{eqnarray*}
+
+\item PATO : \begin{eqnarray*}
+ \pr{type}( \pr{Red}) 
+\end{eqnarray*}
+
+\item PATO : \begin{eqnarray*}
+ \pr{type}( \pr{Shape}) 
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: every type has at least one instance}
+
+\begin{eqnarray*}
+ \pr{type}(U) &\imp & \E i[ \pr{instance\_of}(i, U) ]\dis  \E i, t[ \pr{instance\_of}(i, U, t) ]
+\end{eqnarray*}
+\emph{Axiom: type\_type relations hold between types}
+
+\begin{eqnarray*}
+ \pr{type\_type}(r) &\dimp & \A a, b[r(a, b) \imp  \pr{type}(a) \con \\
+&& \pr{type}(b) ]\con \\
+&& \A a, b[r(a, b, t) \imp  \pr{type}(a) \con \\
+&& \pr{type}(b) ]
+\end{eqnarray*}
+
+\subsection{ \pr{instance}}
+\emph{unary predicate which holds over instances. Instances are spatiotemporal particulars, every instance instantiates a type.}
+
+\subsubsection{Examples}
+\begin{clist}
+\item A particular instance. : \begin{eqnarray*}
+ \pr{instance}( \pr{lung\_of\_patient\_02345}) 
+\end{eqnarray*}
+
+\item A particular instance. : \begin{eqnarray*}
+ \pr{instance}( \pr{shape\_of\_lung\_of\_patient\_02345}) 
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: every instance is an instance of some type}
+
+\begin{eqnarray*}
+ \pr{instance}(i) &\imp & \E U[ \pr{instance\_of}(i, U) ]\dis  \E U, t[ \pr{instance\_of}(i, U, t) ]
+\end{eqnarray*}
+\emph{Axiom: instance\_instance relations hold between instances}
+
+\begin{eqnarray*}
+ \pr{instance\_instance}(r) &\dimp & \A a, b[r(a, b) \imp  \pr{instance}(a) \con \\
+&& \pr{instance}(b) ]\con \\
+&& \A a, b[r(a, b, t) \imp  \pr{instance}(a) \con \\
+&& \pr{instance}(b) ]
+\end{eqnarray*}
+
+\subsection{ \pr{relation}}
+\emph{unary predicate which holds over relations. Relations constitute the edge labels on ontology graphs.}
+
+Note that relations are not constrained to be binary. Relations are part of the domain of discourse in Obolog. However, they can be 'compiled out' by translating them to predicates, treating meta-relation axioms as macros.
+
+\subsubsection{Examples}
+\begin{clist}
+\item RO : \begin{eqnarray*}
+ \pr{relation}( \pr{part\_of}) 
+\end{eqnarray*}
+
+\item RO : \begin{eqnarray*}
+ \pr{relation}( \pr{is\_a}) 
+\end{eqnarray*}
+
+\item RO : \begin{eqnarray*}
+ \pr{relation}( \pr{instance\_of}) 
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: instance\_instance holds only for relations}
+
+\begin{eqnarray*}
+ \pr{instance\_instance}(r) &\imp & \pr{relation}(r) 
+\end{eqnarray*}
+\emph{Axiom: type\_type holds only for relations}
+
+\begin{eqnarray*}
+ \pr{type\_type}(r) &\imp & \pr{relation}(r) 
+\end{eqnarray*}
+
+\subsection{ \pr{annotation}}
+\emph{unary predicate which holds over annotations. Annotations are reified sentences.}
+
+Axioms pertaining to annotations are dealt with in a separate theory.
+
+\subsubsection{Axioms and Theorems}
+
+
+
+\subsection{ \pr{type\_type}}
+\emph{unary predicate which holds over relations whose domain and range are types}
+
+\emph{unary predicate which holds over relations whose domain and range are instances}
+
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: type\_type relations hold between types}
+
+\begin{eqnarray*}
+ \pr{type\_type}(r) &\dimp & \A a, b[r(a, b) \imp  \pr{type}(a) \con \\
+&& \pr{type}(b) ]\con \\
+&& \A a, b[r(a, b, t) \imp  \pr{type}(a) \con \\
+&& \pr{type}(b) ]
+\end{eqnarray*}
+\emph{Axiom: type\_type holds only for relations}
+
+\begin{eqnarray*}
+ \pr{type\_type}(r) &\imp & \pr{relation}(r) 
+\end{eqnarray*}
+\emph{Axiom: all\_only relates from type level relations}
+
+\begin{eqnarray*}
+ \pr{all\_only}(tr, ir) &\imp & \pr{type\_type}(tr) 
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{all\_some}(tr, ir) &\imp & \pr{type\_type}(tr) 
+\end{eqnarray*}
+\emph{Axiom: all\_some\_all\_times holds between an instance-instance relation and a type-type relation}
+
+\begin{eqnarray*}
+ \pr{all\_some\_all\_times}(tr, ir) &\imp & \pr{instance\_instance}(ir) \con \\
+&& \pr{type\_type}(tr) 
+\end{eqnarray*}
+
+\subsection{ \pr{instance\_instance}}
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: instance\_instance relations hold between instances}
+
+\begin{eqnarray*}
+ \pr{instance\_instance}(r) &\dimp & \A a, b[r(a, b) \imp  \pr{instance}(a) \con \\
+&& \pr{instance}(b) ]\con \\
+&& \A a, b[r(a, b, t) \imp  \pr{instance}(a) \con \\
+&& \pr{instance}(b) ]
+\end{eqnarray*}
+\emph{Axiom: instance\_instance holds only for relations}
+
+\begin{eqnarray*}
+ \pr{instance\_instance}(r) &\imp & \pr{relation}(r) 
+\end{eqnarray*}
+\emph{Axiom: all\_only relates to instance level relations}
+
+\begin{eqnarray*}
+ \pr{all\_only}(tr, ir) &\imp & \pr{instance\_instance}(ir) 
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{all\_some}(tr, ir) &\imp & \pr{instance\_instance}(ir) 
+\end{eqnarray*}
+\emph{Axiom: all\_some\_all\_times holds between an instance-instance relation and a type-type relation}
+
+\begin{eqnarray*}
+ \pr{all\_some\_all\_times}(tr, ir) &\imp & \pr{instance\_instance}(ir) \con \\
+&& \pr{type\_type}(tr) 
+\end{eqnarray*}
+
+\subsection{ \pr{subrelation}}
+\emph{a transitive meta-level relation between two relations r1 and r2, such that if r1 holds between a and b (optionally: t) then r2 must hold between a and b (t)}
+
+\subsubsection{Examples}
+\begin{clist}
+\item RO : \begin{eqnarray*}
+ \pr{subrelation}( \pr{agent\_in},  \pr{participates\_in}) 
+\end{eqnarray*}
+
+\item RO : \begin{eqnarray*}
+ \pr{subrelation}( \pr{proper\_part\_of},  \pr{part\_of}) 
+\end{eqnarray*}
+
+\item GO: Every negative regulation relationship is necessarily a regulation relationship : \begin{eqnarray*}
+ \pr{subrelation}( \pr{negatively\_regulates},  \pr{regulates}) 
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+\begin{clist}
+\item transitive
+\end{clist}
+
+\emph{Axiom: If a binary relation holds, binary subrelations necessarily hold [derived from transitivity axiom]}
+
+\begin{eqnarray*}
+ \pr{subrelation}(r1, r2) \con \\
+r1(x, y) &\imp &r2(x, y) 
+\end{eqnarray*}
+\emph{Axiom: If a ternary relation holds, ternary subrelations necessarily hold [derived from transitivity axiom]}
+
+\begin{eqnarray*}
+ \pr{subrelation}(r1, r2) \con \\
+r1(x, y, t) &\imp &r2(x, y, t) 
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{proper\_subrelation}(pr, r) &\imp & \pr{irreflexive}(pr) \con \\
+&& \pr{subrelation}(pr, r) 
+\end{eqnarray*}
+
+\subsection{ \pr{all\_some\_all\_times}}
+\emph{relates a type-level relation <i>tr</i> to its instance-level counterpart <b>ir</b>, in a temporally invariant way such that for two types, A and B, related by <i>tr</i>, it is the case that all instances of A are related by <b>ir</b> to some instance of B at all times for which the instance of A exists}
+
+The examples here assume the type-level relation is indicated using the suffix '\_some', but best practice has not yet been decided
+
+\subsubsection{Examples}
+\begin{clist}
+\item RO : \begin{eqnarray*}
+ \pr{all\_some\_all\_times}( \pr{part\_of\_some},  \pr{part\_of}) 
+\end{eqnarray*}
+
+\item GO : \begin{eqnarray*}
+ \pr{part\_of\_some}( \pr{nucleus},  \pr{cell}) &\imp & \A n, t[ \pr{instance\_of}(n,  \pr{nucleus}, t) \imp  \E c[ \pr{instance\_of}(c,  \pr{cell}, t) \con \\
+&& \pr{part\_of}(n, c, t) ]]
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+\begin{clist}
+\item functional
+\end{clist}
+
+\emph{Axiom: if an all-some-all-times relations holds at the type level between A and B, it holds for all instances of A to some instance of B at all times that the instance of A exists}
+
+\begin{eqnarray*}
+ \pr{all\_some\_all\_times}(tr, ir) &\imp &tr(A, B) \con \\
+&& \pr{instance\_of}(ai, A, t) \imp  \E bi[ \pr{instance\_of}(bi, B, t) \con \\
+&&ir(ai, bi, t) ]
+\end{eqnarray*}
+\emph{Axiom: all\_some\_all\_times holds between an instance-instance relation and a type-type relation}
+
+\begin{eqnarray*}
+ \pr{all\_some\_all\_times}(tr, ir) &\imp & \pr{instance\_instance}(ir) \con \\
+&& \pr{type\_type}(tr) 
+\end{eqnarray*}
+
+\subsection{ \pr{all\_some}}
+\emph{relates a type-level relation <i>tr</i> to its instance-level counterpart <b>ir</b>, in an atemporal way, such that for two types, A and B, related by <i>tr</i>, it is the case that all instances of A are related by <b>ir</b> to some instance of B}
+
+Corresponds to an existential restriction in OWL
+
+\subsubsection{Examples}
+\begin{clist}
+\item RO : \begin{eqnarray*}
+ \pr{all\_some}( \pr{part\_of\_some},  \pr{part\_of}) \con \\
+ \pr{part\_of\_some}( \pr{mitosis},  \pr{M\_phase\_of\_mitotic\_cell\_cycle}) 
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+
+\begin{eqnarray*}
+ \pr{all\_some}(tr, ir) &\imp & \pr{instance\_instance}(ir) 
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{all\_some}(tr, ir) &\imp & \pr{type\_type}(tr) 
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{all\_some}(tr, ir) &\imp &tr(A, B) \con \\
+&& \pr{instance\_of}(ai, A) \imp  \E bi[ \pr{instance\_of}(bi, B) \con \\
+&&ir(ai, bi) ]
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{inverse\_of\_on\_instance\_level}(r, r2) &\dimp & \pr{all\_some}(r, rp) \con \\
+&& \pr{all\_some}(r2, rp2) \con \\
+&& \pr{inverse\_of}(r2, rp2) 
+\end{eqnarray*}
+
+\subsection{ \pr{all\_only}}
+\emph{relates a type-level relation <i>tr</i> to its instance-level counterpart <b>ir</b>, in an atemporal way, such that for two types, A and B, related by <i>tr</i>, it is the case that no instances of A are related by <b>ir</b> to something that is not an instance of B}
+
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: all\_only definition}
+
+\begin{eqnarray*}
+ \pr{all\_only}(tr, ir) &\dimp &tr(A, B) \con \\
+&& \pr{instance\_of}(ai, A) \imp  \n( \E bi[ \n( \pr{instance\_of}(bi, B) )\con \\
+&&ir(ai, bi) ])
+\end{eqnarray*}
+\emph{Axiom: all\_only relates to instance level relations}
+
+\begin{eqnarray*}
+ \pr{all\_only}(tr, ir) &\imp & \pr{instance\_instance}(ir) 
+\end{eqnarray*}
+\emph{Axiom: all\_only relates from type level relations}
+
+\begin{eqnarray*}
+ \pr{all\_only}(tr, ir) &\imp & \pr{type\_type}(tr) 
+\end{eqnarray*}
+\emph{Thereom: propagation of all\_only relations under is\_a}
+
+\begin{eqnarray*}
+ \pr{all\_only}(tr, ir) &\imp &tr(A, B) \con \\
+&& \pr{is\_a}(B, C) \imp tr(A, C) 
+\end{eqnarray*}
+\emph{Thereom: propagation of all\_only relations over is\_a}
+
+\begin{eqnarray*}
+ \pr{all\_only}(tr, ir) &\imp & \pr{is\_a}(A, B) \con \\
+&&tr(B, C) \imp tr(A, C) 
+\end{eqnarray*}
+
+\subsection{ \pr{all\_some\_tr}}
+\emph{relates a type-level relation <i>tr</i> to its instance-level counterpart <b>ir</b>, such that for two types, A and B, related by <i>tr</i>, it is the case that all instances of A stand ing a <b>ir</b> relation to some B for some time, and neither becomes detached or starts in a detached state}
+
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: all\_some\_tr definition}
+
+\begin{eqnarray*}
+ \pr{all\_some\_tr}(tr, ir) &\dimp &tr(A, B) \con \\
+&& \pr{instance\_of}(ai, A, t) \imp  \E bi[ \E t1[ \pr{instance\_of}(bi, B, t1) \con \\
+&&ir(ai, bi, t1) ]\con \\
+&& \pr{=>}( \pr{exists\_at}(ai, t2) \con \\
+&& \pr{exists\_at}(b1, t2) \con \\
+&&ir(ai, bi, t2) ) ]
+\end{eqnarray*}
+
+\subsection{ \pr{all\_some\_in\_reference\_context}}
+\emph{relates a type-level relation <i>tr</i> to its instance-level counterpart <b>ir</b>, such that for two types, A and B, related by <i>tr</i>, it is the case that all instances of A stand in a <b>ir</b> relation to some B where both instances stand in relation r2 to the same entity}
+
+See Neuhaus, Osumi-Sutherland for details
+
+\subsubsection{Examples}
+\begin{clist}
+\item FBdv : \begin{eqnarray*}
+ \pr{all\_some\_in\_reference\_context}( \pr{begins\_at\_end\_of\_r},  \pr{begins\_at\_end\_of},  \pr{reference\_process}) \con \\
+ \pr{range}( \pr{reference\_process},  \pr{life}) \con \\
+ \pr{begins\_at\_end\_of\_r}( \pr{germ\_band\_retraction},  \pr{embryonic\_stage\_11}) 
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+
+\begin{eqnarray*}
+ \pr{all\_some\_in\_reference\_context}(tr, ir, rr) &\imp &tr(A, B) \con \\
+&& \pr{instance\_of}(ai, A) \imp  \E bi[ \pr{instance\_of}(bi, B) \con \\
+&&rr(ai, ri) \imp rr(ai, ri) \con \\
+&&ir(ai, bi) ]
+\end{eqnarray*}
+
+\subsection{ \pr{holds\_atemporally\_between}}
+\emph{A relation R holds atemporally between two types A and B if for all R(a,b), it is the case that a and b are instances of A and B}
+
+\subsubsection{Examples}
+\begin{clist}
+\item RO : \begin{eqnarray*}
+ \pr{holds\_atemporally\_between}( \pr{part\_of},  \pr{Occurrent},  \pr{Occurrent}) 
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: holds\_atemporally\_between definition}
+
+\begin{eqnarray*}
+ \pr{holds\_atemporally\_between}(rel, U1, U2) &\dimp &rel(i1, i2) \imp  \pr{instance\_of}(i1, U1) \con \\
+&& \pr{instance\_of}(i2, U2) 
+\end{eqnarray*}
+
+\subsection{ \pr{holds\_temporally\_between}}
+\emph{A relation R holds temporally between two types A and B if for all R(a,b,t), it is the case that a and b are instances of A and B}
+
+\subsubsection{Examples}
+\begin{clist}
+\item RO : \begin{eqnarray*}
+ \pr{holds\_temporally\_between}( \pr{part\_of},  \pr{Continuant},  \pr{Continuant}) 
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: holds\_temporally\_between definition}
+
+\begin{eqnarray*}
+ \pr{holds\_temporally\_between}(rel, U1, U2) &\dimp &rel(i1, i2, t) \imp  \pr{instance\_of}(t,  \pr{span:TemporalRegion}) \con \\
+&& \pr{instance\_of}(i1, U1, t) \con \\
+&& \pr{instance\_of}(i2, U2, t) 
+\end{eqnarray*}
+
+\subsection{ \pr{homeomorphic\_for}}
+\emph{A relation is homeomorphic for a particular type if the relation always holds between like types}
+
+\subsubsection{Examples}
+\begin{clist}
+\item BFO : \begin{eqnarray*}
+ \pr{homeomorphic\_for}( \pr{part\_of},  \pr{IndependentContinuant}) 
+\end{eqnarray*}
+
+\item BFO : \begin{eqnarray*}
+ \pr{homeomorphic\_for}( \pr{part\_of},  \pr{Process}) 
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: homeomorphic atemporal relations}
+
+\begin{eqnarray*}
+ \pr{homeomorphic\_for}(r, U) &\imp &r(a, bt) \con \\
+&& \pr{instance\_of}(a, U) \imp  \pr{instance\_of}(b, U) 
+\end{eqnarray*}
+\emph{Axiom: homeomorphic time-indexed relations}
+
+\begin{eqnarray*}
+ \pr{homeomorphic\_for}(r, U) &\imp &r(a, b, t) \con \\
+&& \pr{instance\_of}(a, U, t) \imp  \pr{instance\_of}(b, U, t) 
+\end{eqnarray*}
+
+\subsection{ \pr{domain}}
+\emph{Constrains relations such that the subject (first argument) of the relation only holds between instances of the specified type}
+
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: domain constraints on atemporal relations}
+
+\begin{eqnarray*}
+ \pr{domain}(rel, D) \con \\
+rel(i1, i2) &\imp & \pr{instance\_of}(i2, D) 
+\end{eqnarray*}
+\emph{Axiom: domain constraints on time-indexed relations}
+
+\begin{eqnarray*}
+ \pr{domain}(rel, D) \con \\
+rel(i1, i2, t) &\imp & \pr{instance\_of}(i2, D, t) 
+\end{eqnarray*}
+
+\subsection{ \pr{range}}
+\emph{Constrains relations such that the object (second argument) of the relation only holds between instances of the specified type}
+
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: range constraints on atemporal relations}
+
+\begin{eqnarray*}
+ \pr{range}(rel, R) \con \\
+rel(i1, i2t) &\imp & \pr{instance\_of}(i1, D) 
+\end{eqnarray*}
+\emph{Axiom: range constraints on time-indexed relations}
+
+\begin{eqnarray*}
+ \pr{range}(rel, R) \con \\
+rel(i1, i2, t) &\imp & \pr{instance\_of}(i1, D, t) 
+\end{eqnarray*}
+
+\subsection{ \pr{inverse\_of}}
+\emph{holds between two relations such that a sentence of one implies a sentence of the other, with 1st and 2nd arguments swapped.}
+
+note that this should not be applied to type\_type all\_some relations
+
+\subsubsection{Axioms and Theorems}
+
+\begin{clist}
+\item symmetric
+\end{clist}
+
+\begin{eqnarray*}
+ \pr{inverse\_of}(r, s) &\dimp &r(a, b) \imp s(b, a) \con \\
+&&r(a, b, t) \imp s(b, a, t) 
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{inverse\_of\_on\_instance\_level}(r, r2) &\dimp & \pr{all\_some}(r, rp) \con \\
+&& \pr{all\_some}(r2, rp2) \con \\
+&& \pr{inverse\_of}(r2, rp2) 
+\end{eqnarray*}
+
+\subsection{ \pr{inverse\_of\_on\_instance\_level}}
+\emph{holds between two relations such that their instance level counterparts are inverses.}
+
+\subsubsection{Axioms and Theorems}
+
+\begin{clist}
+\item symmetric
+\end{clist}
+
+\begin{eqnarray*}
+ \pr{inverse\_of\_on\_instance\_level}(r, r2) &\dimp & \pr{all\_some}(r, rp) \con \\
+&& \pr{all\_some}(r2, rp2) \con \\
+&& \pr{inverse\_of}(r2, rp2) 
+\end{eqnarray*}
+
+\subsection{ \pr{holds\_bidirectionally\_for}}
+\emph{holds\_bidirectionally\_for(SR,R,Inv), X SR Y => X R Y and Y Inv X}
+
+\subsubsection{Examples}
+\begin{clist}
+\item - : \begin{eqnarray*}
+ \pr{holds\_bidirectionally\_for}( \pr{integral\_part\_of},  \pr{part\_of\_some},  \pr{has\_part\_some}) 
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+
+\begin{eqnarray*}
+ \pr{holds\_bidirectionally\_for}(sr, r, ir) &\dimp &sr(a, b) \imp r(a, b) \con \\
+&&ir(b, a) 
+\end{eqnarray*}
+
+\subsection{ \pr{functional}}
+\emph{A functional relation acts like a function in that the subject relates to a single object.}
+
+\subsubsection{Axioms and Theorems}
+
+
+\begin{eqnarray*}
+ \pr{bijective}(r) &\dimp & \pr{functional}(r) \con \\
+&& \pr{inverse\_functional}(r) 
+\end{eqnarray*}
+\emph{Axiom: functional atemporal relations}
+
+\begin{eqnarray*}
+ \pr{functional}(rel) \con \\
+rel(x, y1) \con \\
+rel(x, y2) &\imp & \pr{equivalent\_to}(y1, y2) 
+\end{eqnarray*}
+\emph{Axiom: functional time-indexed relations}
+
+\begin{eqnarray*}
+ \pr{functional}(rel) \con \\
+rel(x, y1, t) \con \\
+rel(x, y2, t) &\imp & \pr{equivalent\_to}(y1, y2) 
+\end{eqnarray*}
+
+\subsection{ \pr{inverse\_functional}}
+\emph{A inverse\_functional relation acts like a function in that the object relates to a single subject.}
+
+\subsubsection{Axioms and Theorems}
+
+
+\begin{eqnarray*}
+ \pr{bijective}(r) &\dimp & \pr{functional}(r) \con \\
+&& \pr{inverse\_functional}(r) 
+\end{eqnarray*}
+\emph{Axiom: inverse\_functional atemporal relations}
+
+\begin{eqnarray*}
+ \pr{inverse\_functional}(rel) \con \\
+rel(x1, y) \con \\
+rel(x2, y) &\imp & \pr{equivalent\_to}(x1, x2) 
+\end{eqnarray*}
+\emph{Axiom: inverse\_functional time-indexed relations}
+
+\begin{eqnarray*}
+ \pr{inverse\_functional}(rel) \con \\
+rel(x1, y, t) \con \\
+rel(x2, y, t) &\imp & \pr{equivalent\_to}(x1, x2) 
+\end{eqnarray*}
+
+\subsection{ \pr{bijective}}
+\subsubsection{Axioms and Theorems}
+
+
+\begin{eqnarray*}
+ \pr{bijective}(r) &\dimp & \pr{functional}(r) \con \\
+&& \pr{inverse\_functional}(r) 
+\end{eqnarray*}
+
+\subsection{ \pr{reflexive}}
+\emph{A reflexive relation always holds between an entity and itself}
+
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: reflexivity of atemporal relations: if the relation ever holds for an entity, it holds between that entity and itself}
+
+\begin{eqnarray*}
+ \pr{reflexive}(rel) \con \\
+ \E b[rel(a, b) ]&\imp &rel(a, a) 
+\end{eqnarray*}
+\emph{Axiom: reflexivity of time-indexed relations: if the relation ever holds for an entity at some time, it holds between that entity and itself at all times}
+
+\begin{eqnarray*}
+ \pr{reflexive}(rel) \con \\
+ \E b, t[rel(a, b, t) ]&\imp &rel(a, a, t2) 
+\end{eqnarray*}
+
+\subsection{ \pr{irreflexive}}
+\emph{An irreflexive relation never holds between an entity and itself}
+
+\subsubsection{Axioms and Theorems}
+
+
+\begin{eqnarray*}
+ \pr{irreflexive}(rel) &\imp & \n( \E x[rel(x, x) ])
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{irreflexive}(rel) &\imp & \n( \E x, t[rel(x, x, t) ])
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{proper\_subrelation}(pr, r) &\imp & \pr{irreflexive}(pr) \con \\
+&& \pr{subrelation}(pr, r) 
+\end{eqnarray*}
+
+\subsection{ \pr{transitive}}
+\emph{If R is transitive, then we can infer a R c from a R b and b R c. If R is time-indexed, then we can infer a R c @t from a R b @t and b R c @t}
+
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: transitivity of atemporal relations}
+
+\begin{eqnarray*}
+ \pr{transitive}(rel) \con \\
+rel(X, Y) \con \\
+rel(Y, Z) &\imp &rel(X, Z) 
+\end{eqnarray*}
+\emph{Axiom: transitivity of time-indexed relations. The 3rd argument must match to make the inference}
+
+\begin{eqnarray*}
+ \pr{transitive}(rel) \con \\
+rel(x, y, t) \con \\
+rel(y, z, t) &\imp &rel(x, z, t) 
+\end{eqnarray*}
+
+\subsection{ \pr{symmetric}}
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: symmetricality implies cyclicity}
+
+\begin{eqnarray*}
+ \pr{symmetric}(rel) &\imp & \pr{cyclic}(rel) 
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{symmetric}(rel) \con \\
+rel(i1, i2) &\imp &rel(i2, i1) 
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{symmetric}(rel) \con \\
+rel(i1, i2, t) &\imp &rel(i2, i1, t) 
+\end{eqnarray*}
+
+\subsection{ \pr{antisymmetric}}
+\emph{a binary relation R is antisymmetric if, for all a and b, if a is R to b and b is R to a, then a = b.}
+
+\subsubsection{Axioms and Theorems}
+
+
+\begin{eqnarray*}
+ \pr{antisymmetric}(rel) &\dimp &rel(U1, U2) \con \\
+&&rel(U2, U1) \imp  \pr{equivalent\_to}(U1, U2) 
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{antisymmetric}(rel) &\dimp &rel(i1, i2, t) \con \\
+&&rel(i2, i1, t) \imp  \pr{equivalent\_to}(i1, i2) 
+\end{eqnarray*}
+
+\subsection{ \pr{cyclic}}
+\emph{A cyclic relation is one which holds bidirectionally between two non-identical entities}
+
+The definition of cyclicity involves two entities. Note that for transitive relations longer chains are accounted for by transitivity axioms.
+
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: cylic definition}
+
+\begin{eqnarray*}
+ \pr{cyclic}(rel) &\dimp & \E X, Y[rel(X, Y) \con \\
+&&rel(Y, X) \con \\
+&& \n( \pr{equivalent\_to}(X, Y) )]
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{acyclic}(rel) &\imp & \n( \pr{cyclic}(rel) )
+\end{eqnarray*}
+\emph{Axiom: symmetricality implies cyclicity}
+
+\begin{eqnarray*}
+ \pr{symmetric}(rel) &\imp & \pr{cyclic}(rel) 
+\end{eqnarray*}
+
+\subsection{ \pr{directed\_path\_over}}
+\emph{S directed\_path\_over R iff for all a\_1,a\_n it is the case that S(a\_1,a\_n) implies a chain R(a\_1,a\_2),R(a\_2,a\_3),...,R(a\_{n-1},a\_n). Vertices may be visisted more than once. If the chain includes R(x,y) then it may not contain R(y,x), even if R is symmetric - the path is directed.}
+
+note that this is not the same as the transitive version of the relation. S(x,x) only holds for cyclic structures.
+
+\subsubsection{Axioms and Theorems}
+
+
+
+\subsection{ \pr{directed\_simple\_path\_over}}
+\emph{S directed\_simple\_path\_over R iff for all a\_1,a\_n it is the case that S(a\_1,a\_n) implies a chain R(a\_1,a\_2),R(a\_2,a\_3),...,R(a\_{n-1},a\_n). Vertices may be not be visisted more than once, with the exception of the start vertex.}
+
+\subsubsection{Axioms and Theorems}
+
+
+
+\subsection{ \pr{cyclic\_over}}
+\emph{S cyclic\_over R iff there is a simple directed path over R starting and ending at v1 over vertices in V, then S holds between all pairs in V}
+
+\subsubsection{Examples}
+\begin{clist}
+\item A ring of 6 carbon instances connected c1-c2,...,c6-c1. Each is connected\_in\_cycle\_with all the others : \begin{eqnarray*}
+ \pr{cyclic\_over}( \pr{connected\_in\_cycle\_with},  \pr{directly\_connected\_to}) 
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+
+
+\subsection{ \pr{acyclic}}
+\emph{An acyclic relation is a relation for which the cylicity property does not hold.}
+
+\subsubsection{Axioms and Theorems}
+
+
+\begin{eqnarray*}
+ \pr{acyclic}(rel) &\imp & \n( \pr{cyclic}(rel) )
+\end{eqnarray*}
+
+\subsection{ \pr{proper\_subrelation}}
+\emph{An irreflexive subrelation predicate}
+
+\subsubsection{Axioms and Theorems}
+
+
+\begin{eqnarray*}
+ \pr{proper\_subrelation}(pr, r) &\imp & \pr{irreflexive}(pr) \con \\
+&& \pr{subrelation}(pr, r) 
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{proper\_subrelation}(r1, r2) \con \\
+r1(x, y) \con \\
+ \n(x = y)&\dimp &r2(x, y) 
+\end{eqnarray*}
+
+\subsection{ \pr{transitive\_over}}
+\emph{R is transitive\_over S if R and S compose to R. i.e. a R b S c implies a R c}
+
+\subsubsection{Examples}
+\begin{clist}
+\item GO : \begin{eqnarray*}
+ \pr{transitive\_over}( \pr{regulates},  \pr{part\_of}) 
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+\begin{clist}
+\item transitive
+\end{clist}
+
+\emph{Axiom: transitive\_over for atemporal relations}
+
+\begin{eqnarray*}
+ \pr{transitive\_over}(rel, over) &\imp &rel(i1, i2) \con \\
+&&over(i2, i3) \imp rel(i1, i3) 
+\end{eqnarray*}
+\emph{Axiom: transitive\_over for time-indexed relations}
+
+\begin{eqnarray*}
+ \pr{transitive\_over}(rel, over) &\imp &rel(i1, i2, t) \con \\
+&&over(i2, i3, t) \imp rel(i1, i3, t) 
+\end{eqnarray*}
+
+\subsection{ \pr{holds\_over\_chain}}
+\emph{R holds\_over\_chain R1 R2 iff R1 and R2 compose together to make R. i.e. a R1 b R2 c implies a R c}
+
+\subsubsection{Examples}
+\begin{clist}
+\item PATO : \begin{eqnarray*}
+ \pr{holds\_over\_chain}( \pr{inheres\_in\_part\_of},  \pr{inheres\_in},  \pr{part\_of}) 
+\end{eqnarray*}
+
+\item ZFA : \begin{eqnarray*}
+ \pr{holds\_over\_chain}( \pr{starts\_during\_or\_after},  \pr{part\_of},  \pr{starts\_during}) 
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+
+\emph{Axiom: holds\_over\_chain for atemporal relations}
+
+\begin{eqnarray*}
+ \pr{holds\_over\_chain}(rel, r1,  \pr{r2}) &\imp &r1(i1, i2) \con \\
+&&r2(i2, i3) \imp rel(i1, i3) 
+\end{eqnarray*}
+\emph{Axiom: holds\_over\_chain for time-indexed relations}
+
+\begin{eqnarray*}
+ \pr{holds\_over\_chain}(rel, r1,  \pr{r2}) &\imp &r1(i1, i2, t) \con \\
+&&r2(i2, i3, t) \imp rel(i1, i3, t) 
+\end{eqnarray*}
+
+\subsection{ \pr{disjoint\_over}}
+\emph{R is disjoint\_over S if R holds between entities that are not S-siblings.}
+
+\subsubsection{Examples}
+\begin{clist}
+\item If X is spatially disconnected from Y, then there are no Z such that Z part\_of\_some X and Z part\_of\_some Y. : \begin{eqnarray*}
+ \pr{disjoint\_over}( \pr{spatially\_disconnected\_from},  \pr{part\_of\_some}) 
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+
+\begin{eqnarray*}
+ \pr{disjoint\_over}(r, over) &\imp &r(a, b) \imp  \n( \E x[over(x, a) \con \\
+&&over(x, b) ])
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{disjoint\_over}(r, over) &\imp &r(a, b) \imp  \n( \E x[over(x, a, t) \con \\
+&&over(x, b, t) ])
+\end{eqnarray*}
+
+\subsection{ \pr{maximal\_over}}
+\emph{R is maximal\_over S iff when R(a,x,y) holds, it is the case that for all b [ b S a implies b S x and b S y].}
+
+\subsubsection{Examples}
+\begin{clist}
+\item If A maximally\_overlaps B and C, all the parts overlapping A also overlap B and C. : \begin{eqnarray*}
+ \pr{maximally\_overlaps}( \pr{maximally\_overlaps},  \pr{overlaps}) 
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+
+\begin{eqnarray*}
+ \pr{maximal\_over}(r, over) &\imp &r(a, x, y) \imp  \pr{forall}(b, over(b, a) ,  \pr{=>}(over(b, x) \con \\
+&&over(b, y) ) ) 
+\end{eqnarray*}
+
+\subsection{ \pr{disjoint\_from}}
+\emph{A is disjoint\_from B if there is nothing that is an instance\_of both A and B (at any one time)}
+
+\subsubsection{Examples}
+\begin{clist}
+\item FBbt : \begin{eqnarray*}
+ \pr{disjoint\_from}( \pr{embryo},  \pr{larva}) 
+\end{eqnarray*}
+
+\end{clist}
+
+\subsubsection{Axioms and Theorems}
+
+\begin{clist}
+\item symmetric
+\end{clist}
+
+\emph{Axiom: }
+
+\begin{eqnarray*}
+ \pr{disjoint\_from}(a, b) &\dimp & \n( \E x[ \pr{instance\_of}(x, a) \con \\
+&& \pr{instance\_of}(x, b) ])\con \\
+&& \n( \E x[ \pr{instance\_of}(x, a, t) \con \\
+&& \pr{instance\_of}(x, b, t) ])
+\end{eqnarray*}
+\emph{Theorem: disjoint types do not share is\_a children}
+
+\begin{eqnarray*}
+ \pr{disjoint\_from}(a, b) &\imp & \n( \E x[ \pr{is\_a}(x, a, t) \con \\
+&& \pr{is\_a}(x, b, t) ])
+\end{eqnarray*}
+
+\subsection{ \pr{relation\_arity}}
+\subsubsection{Axioms and Theorems}
+
+
+
+\subsection{ \pr{relation\_min\_arity}}
+\subsubsection{Axioms and Theorems}
+
+
+
+\subsection{ \pr{relation\_max\_arity}}
+\subsubsection{Axioms and Theorems}
+
+
+
+\subsection{ \pr{posits}}
+\subsubsection{Axioms and Theorems}
+
+
+
+\subsection{ \pr{namespace}}
+\emph{Relation between an identifier and a namespace. Each identifier belongs to only one namespace. Labels are unique within namespace. The unique identifier assumption holds within a namespace unless otherwise stated.}
+
+Namespaces can also be thought of as ontologies.
+
+\subsubsection{Axioms and Theorems}
+
+\begin{clist}
+\item functional
+\end{clist}
+
+\emph{Axiom: identity implies identity of labels if Unique Label Assumptions holds within an ontology. }
+
+\begin{eqnarray*}
+ \pr{namespace}(a, x) \con \\
+ \pr{namespace}(b, x) \con \\
+ \pr{identifier}(a, an) \con \\
+ \pr{identifier}(b, bn) \con \\
+ \pr{unique\_identifier\_assumption}(x) \con \\
+ \n(a = b)&\imp & \n(an = bn)
+\end{eqnarray*}
+\emph{Axiom: identity implies identity of identifiers if Unique Label Assumptions holds within an ontology. }
+
+\begin{eqnarray*}
+ \pr{namespace}(a, x) \con \\
+ \pr{namespace}(b, x) \con \\
+ \pr{label}(a, an) \con \\
+ \pr{label}(b, bn) \con \\
+ \pr{unique\_label\_assumption}(x) \con \\
+ \n(a = b)&\imp & \n(an = bn)
+\end{eqnarray*}
+
