@@ -1,5 +1,5 @@
 # Obolog
 
-See [README.md](README.md) for Background
+See [README.md](README) for Background
 
- * [obolog.html](obolog.html)
+ * [obolog](obolog) HTML translation of KIF

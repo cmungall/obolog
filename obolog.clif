@@ -1,0 +1,301 @@
+;; CONVENTIONS:
+;; upper case for universals, lower case for instances
+;; - but remember, most KIF implementations are case insenstivite
+
+
+;; ****************************************
+;; (instance_of ?instance ?Universal ?time)
+;; ****************************************
+
+;; right now ALL instantiations are time-indexed
+;; this is not necessary for processes?
+(=>
+ (and (instance_of ?i ?X ?t)
+      (is_a ?X ?Y))
+ (instance_of ?i ?Y ?t))
+
+;; ****************************************
+;; (subrelation ?relation ?parent_relation)
+;; ****************************************
+(=> (and (subrelation ?r1 ?r2)
+         (?r1 ?x ?y))
+    (?r2 ?x ?y))
+(=> (and (subrelation ?x ?y)
+         (subrelation ?y ?z))
+    (subrelation ?x ?z))
+
+;; universal-level relations
+;;  we specify these as (holds ?rel ?C1 ?C2)
+;; we could instead have a binary relation (?rel ?C1 ?C2), but it
+;; helps to distinguish relations involving universals from those
+;; involving instance, since we use
+;; the same identifiers for instance and universal level relations
+
+;; ****************************************
+;; (all_some ?relation)
+;; (all_times ?relation)
+;; ****************************************
+;; EXAMPLE: (all_some part_of all_times part_of) (holds part_of cell_nucleus cell)
+;;
+;; most relations follow the OBO-RO all-some pattern
+;; ie ALL instances of U1 stand in relation ?rel to SOME instance U2 at ALL times
+(=>
+ (and (all_some ?rel)
+      (holds_for_all_times ?rel)
+      (holds ?rel ?U1 ?U2)
+      (instance_of ?i1 ?U1 ?t))
+ (exists (?i2)
+         (and (instance_of ?i2 ?U2 ?t)
+              (?rel ?i1 ?i2 ?t))))
+
+;; all-some at some time
+(=>
+ (and (all_some ?rel)
+      (some_time ?rel)
+      (holds ?rel ?U1 ?U2)
+      (instance_of ?i1 ?U1 ?t))
+ (exists (?i2 ?t2)
+         (and (instance_of ?i2 ?U2 ?t2)
+              (?rel ?i1 ?i2 ?t2))))
+
+;; all-some atemporal -- for example, process1 part_of process2
+(=>
+ (and (all_some ?rel)
+      (holds ?rel ?U1 ?U2)
+      (instance_of ?i1 ?U1))
+ (exists (?i2)
+         (?rel ?i1 ?i2)))
+
+(=>
+ (and (holds_atemporally_between ?rel ?U1 ?U2)
+      (?rel ?i1 ?i2)
+ (and (instance_of ?i1 ?U1)
+      (instance_of ?i2 ?U2))))
+
+(=>
+ (and (holds_temporally_between ?rel ?U1 ?U2)
+      (?rel ?i1 ?i2 ?t)
+ (and (instantiates_at ?i1 ?U1 ?t)
+      (instantiates_at ?i2 ?U2 ?t))))
+
+;; instance_of is either binary (atemporal) or ternary (time-indexed)
+;; the former is for occurrents, the latter for continuants
+;; we do not interchange between the two, but we do provide instantiates_at/3
+;; which allows us to treat atemporal instantiations with a time index
+(=>
+ (instantiates_at ?i ?U ?t)
+ (or (instantiates_at ?i ?U ?t)
+     (and (exists_at ?i ?t)
+          (instance_of ?i ?U))))
+
+
+
+;; ==============================
+;; domain and range constraints
+;; ==============================
+
+;; ****************************************
+;; (domain ?rel ?class)
+;; ****************************************
+(=> (and (domain ?rel ?D)
+         (?rel ?i1 ?i2 ?t))
+    (instance_of ?i2 ?D ?t))
+
+;; ****************************************
+;; (range ?rel ?class)
+;; ****************************************
+(=> (and (range ?rel ?R)
+         (?rel ?i1 ?i2 ?t))
+    (instance_of ?i1 ?D ?t))
+
+;; ****************************************
+;; (domain_range ?rel ?domainClass ?rangeClass)
+;; ****************************************
+(=> (and (domain_range ?rel ?D ?R)
+         (?rel ?i1 ?i2 ?t)
+         (instance_of ?i1 ?D ?t))
+    (instance_of ?i2 ?R ?t))
+(=> (and (domain_range ?rel ?D ?R)
+         (?rel ?i1 ?i2 ?t)
+         (instance_of ?i2 ?R ?t))
+    (instance_of ?i1 ?D ?t))
+
+
+;; ==============================
+;; relation meta-properties
+;; ==============================
+
+;; ****************************************
+;; (functional ?rel)
+;; ****************************************
+(=> (and (functional ?rel)
+         (?rel ?x ?y1 ?t)
+         (?rel ?x ?y2 ?t))
+    (equivalent ?y1 ?y2))
+
+;; ****************************************
+;; (reflexive ?rel)
+;; ****************************************
+;; reflexivity [instance-level]
+(=> (and (reflexive ?rel)
+         (instance_of ?x ?C ?t))
+    (?rel ?x ?x ?t))
+(=> (and (reflexive ?rel)
+         (instance_of ?x ?C))
+    (?rel ?x ?x))
+
+;; ****************************************
+;; (irreflexive ?rel)
+;; ****************************************
+;; irreflexivity [instance-level]
+(=>  (irreflexive ?rel)
+     (not (exists (?x ?t)
+                  (?rel ?x ?x ?t))))
+(=>  (irreflexive ?rel)
+     (not (exists (?x)
+                  (?rel ?x ?x))))
+
+;; ****************************************
+;; (proper ?rel)
+;; ****************************************
+(=>  (and (proper ?rel)
+          (?rel ?x ?y ?t))
+     (not (identical_at ?x ?y ?t)))
+(=>  (and (proper ?rel)
+          (?rel ?x ?y))
+     (not (identical ?x ?y)))
+
+;; ****************************************
+;; (instance_level_inverse ?rel)
+;; ****************************************
+;; reciprocal relations [instance-level]
+;;  remember, this is just at the instance-level
+;;  not( X part_of Y <=> Y has_part X)
+(=> (and (instance_level_inverse ?rel ?inv)
+         (?rel ?x ?y ?t))
+    (?rel ?y ?x ?t))
+
+;; ****************************************
+;; (transitive ?rel) :: both instance and class level
+;; ****************************************
+
+;; transitivity at the universal level
+(=>
+ (and (transitive ?rel)
+      (all_some_all_times ?rel)
+      (holds ?rel ?X ?Y)
+      (holds ?rel ?Y ?Z))
+ (holds ?rel ?X ?Z))
+
+;; transitivity at the instance level for time-indexed relations
+;;    temporally-subsumed-by/2 is defined in SNARK
+;;   (default-use-temporal-reasoning) - [not working in my v of snark?]
+(=>
+ (and (transitive ?rel)
+      (?rel ?x ?y ?t1)
+      (?rel ?y ?z ?t2)
+      (temporally-subsumed-by ?ti ?t1)
+      (temporally-subsumed-by ?ti ?t2))
+ (?rel ?x ?z ?ti))
+
+;; transitivity at the instance level for non-time-indexed relations
+(=>
+ (and (transitive ?rel)
+      (?rel ?x ?y)
+      (?rel ?y ?z))
+ (?rel ?x ?z))
+
+;; ****************************************
+;; (transitive_over ?rel ?over)
+;; ****************************************
+;; OBO-Format tag: transitive_over
+
+; temporal semantics
+(=>
+ (transitive_over ?rel ?over)
+ (=> (and (?rel ?i1 ?i2 ?t)
+          (?over ?i2 ?i3 ?t))
+     (?rel ?i1 ?i3)))
+
+; atemporal semantics (for example, processes)
+(=>
+ (transitive_over ?rel ?over)
+ (=> (and (?rel ?i1 ?i2 ?t)
+          (?over ?i2 ?i3 ?t))
+     (?rel ?i1 ?i3)))
+
+;; ****************************************
+;; (symmetric ?rel)
+;; ****************************************
+(=>
+ (and (symmetric_for_instances ?rel)
+      (?rel ?i1 ?i2 ?t))
+ (=> (?rel ?i2 ?i1 ?t)))
+
+(=>
+ (and (symmetric_for_instances ?rel)
+      (?rel ?i1 ?i2))
+ (=> (?rel ?i2 ?i1)))
+
+(=>
+ (and (symmetric_for_classes ?rel)
+      (holds ?rel ?U1 ?U2))
+ (=> (?rel ?U1 ?U2)))
+
+;; ****************************************
+;; (antisymmetric ?rel)
+;; ****************************************
+(=>
+ (antisymmetric_for_instances ?rel)
+ (=> (and (?rel ?i1 ?i2 ?t)
+          (?rel ?i2 ?i1 ?t))
+     (identical ?i1 ?i2)))
+
+(=>
+ (antisymmetric_for_classes ?rel)
+ (=> (and (holds ?rel ?U1 ?U2)
+          (holds ?rel ?U2 ?U1))
+     (identical ?U1 ?U2)))
+
+;; ****************************************
+;; (cyclic ?rel)
+;; ****************************************
+(=>
+ (cyclic ?rel)
+ (=> (and (holds ?rel ?X ?Y)
+          (holds ?rel ?Y ?X)
+          (not (equivalent ?X ?Y)))))
+
+;; ****************************************
+;; (acyclic ?rel)
+;; ****************************************
+(=>
+ (acyclic ?rel)
+ (=> (not (cyclic ?rel))))
+
+;; TODO
+;; disjoint_union/N
+;; genus_differentia/N
+;; can we use lisp lists here and have these predicates with arbitrary arity?
+
+;; other predicates have no semantics
+;; eg comment/2, annotation/3
+
+;; -- OBO Relation Ontology --
+
+;; additional formulae that cannot be extracted from obo format
+
+;; OBO_REL:part_of
+;; make this implicit in obo-format?
+;; obof1.3 will have a way of stating this - for
+;; now we add in this supplemental file
+(all_some_all_times OBO_REL__part_of)
+
+;; part_of holds between 2 continuants OR 2 occurrents
+(=> 
+ (OBO_REL__part_of ?x ?y ?t)
+ (or (and (instance_of ?x bfo__Continuant ?t)
+          (instance_of ?y bfo__Continuant ?t))
+     (and (instance_of ?x bfo__Occurrent ?t)
+          (instance_of ?y bfo__Occurrent ?t))))
+

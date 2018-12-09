@@ -31,6 +31,12 @@ The core semantics are specified directly in KIF here:
 
 (The KIF is trivially transformable to Common Logic CLIF syntax)
 
+## Website
+
+An accompanying website provides an HTML rendering of the KIF specification:
+
+ * [https://cmungall.github.io/obolog/obolog](https://cmungall.github.io/obolog/obolog)
+
 ## Datalog Translation
 
 A translation of a subset of the KIF to datalog is provided here:
@@ -40,15 +46,25 @@ A translation of a subset of the KIF to datalog is provided here:
 
 ## RO Obolog
 
+The RO 2005 paper was translated to OBOFormat1.3 with obolog semantics
+
+I seem to have lost the original files. Partial restoration here:
+
+ * [https://cmungall.github.io/obolog/ro/ro](https://cmungall.github.io/obolog/ro/ro)
+
+See also:
+
+ * https://github.com/BFO-ontology/BFO/tree/master/src/ontology/fol-mungall
+    * [ro-core-type-type](https://github.com/BFO-ontology/BFO/blob/master/src/ontology/fol-mungall/fol-src/ro-core-type-type-src.clif)
+    * [ro-core-instance-instance](https://github.com/BFO-ontology/BFO/blob/master/src/ontology/fol-mungall/fol-src/ro-core-instance-instance-src.clif)
 
 
 ## Theorem Proving
 
-obolog/
-        obolog.lisp -- FOL semantics, specified in syntax that should be KIF compatible
-        obolog-theorem-prover.lisp -- SNARK wrapper
-        obolog-theorem-prover.sh -- runs theorem prover
-        ro.obolog -- OBO-RO automatically converted to obolog format
+ * obolog.lisp -- FOL semantics, specified in syntax that should be KIF compatible
+ * obolog-theorem-prover.lisp -- SNARK wrapper
+ * obolog-theorem-prover.sh -- runs theorem prover
+ * ro.obolog -- OBO-RO automatically converted to obolog format
 
 
 ### Notes
