@@ -1,0 +1,357 @@
+\section{Relations from GO/OBO}
+These declarations and
+definitions are imported from the OBO Relation Ontology. We only use
+the is\_a and part\_of relations here, and only show a subset of the
+axioms of relevance for phylogenetic functional inference.
+\subsubsection{Relation:  \pr{is\_a}}
+
+
+Formal definition from the RO: For continuants:
+C is\_a C' if and only if: given any c that instantiates C at a time t,
+c instantiates C' at t. For processes: P is\_a P' if and only if: that
+given any p that instantiates P, then p instantiates P'.
+
+Gene annotations propagate over is\_a
+
+\emph{Axiom: the is\_a relation is transitive}
+
+\begin{eqnarray*}
+ \pr{transitive}( \pr{is\_a}) 
+\end{eqnarray*}
+\subsubsection{Relation:  \pr{part\_of}}
+
+
+For continuants, we have C part\_of C1 if and only if any instance of C at any time is an instance-level part of some instance of C1 at that time, as for example in: cell nucleus part\_ of cell.
+
+Formal definition from the RO: Gene annotations propagate over part\_of
+
+\emph{Axiom: the part\_of relation is transitive}
+
+\begin{eqnarray*}
+ \pr{transitive}( \pr{part\_of}) 
+\end{eqnarray*}
+\section{Phylogenetic Tree Relations and Axioms}
+Axioms for
+Phylogenetic Trees. A tree consists of nodes connected in
+directly\_descended\_from relationships. We infer descended\_from
+relationships from these. Here we assume that no gene can be a node in
+more than one phylogenetic tree, so we conflate gene and node
+together. In particular, intermediate nodes correspond to ancestral
+genes.
+\subsubsection{Relation:  \pr{directly\_descended\_from}}
+
+
+X is directly\_descended\_from
+Y if and only X has an immediate parent Y in a phylogenetic
+tree.
+
+These relationships are not inferred
+within this framework. It is assumed we already have a single unified
+tree with directly\_descended\_from relationships.
+
+\subsubsection{Relation:  \pr{descended\_from}}
+
+
+\begin{eqnarray*}
+ \pr{transitive}( \pr{descended\_from}) 
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{irreflexive}( \pr{descended\_from}) 
+\end{eqnarray*}
+X is descended\_from Y if and only 
+X has an immediate parent Y in a phylogenetic tree. The notion of
+'direct' descendant is artificial here as it depends on how many
+sequences were aligned.
+
+\emph{Axiom: x is descended from y if x is directly descended from y. This is the base case for the recursive axiom below.}
+
+\begin{eqnarray*}
+ \pr{directly\_descended\_from}(x, y) &\imp & \pr{descended\_from}(x, y) 
+\end{eqnarray*}
+\emph{Axiom: x is descended from y if x is directly descended from z and z is descended\_from z. This is the recursive form of descended\_from.}
+
+\begin{eqnarray*}
+ \pr{directly\_descended\_from}(x, z) \con \\
+ \pr{descended\_from}(z, y) &\imp & \pr{descended\_from}(x, y) 
+\end{eqnarray*}
+\subsubsection{Relation:  \pr{common\_ancestor}}
+
+
+\begin{eqnarray*}
+ \pr{descended\_from}(x, a) \con \\
+ \pr{descended\_from}(y, a) &\imp & \pr{common\_ancestor}(x, y, a) 
+\end{eqnarray*}
+\subsubsection{Relation:  \pr{least\_common\_ancestor}}
+
+
+\begin{eqnarray*}
+ \pr{common\_ancestor}(x, y, a) \con \\
+ \n( \E b[ \pr{common\_ancestor}(x, y, b) \con \\
+ \pr{descended\_from}(b, a) ])&\imp & \pr{least\_common\_ancestor}(x, y, a) 
+\end{eqnarray*}
+\subsubsection{Unary predicate:  \pr{leaf\_node}}
+
+
+a node without descendants in the phylogenetic tree.
+
+\emph{Axiom: x is a leaf\_node if and only if x has no descendants.}
+
+\begin{eqnarray*}
+ \pr{leaf\_node}(x) &\dimp & \n( \E y[ \pr{descended\_from}(x, y) ])
+\end{eqnarray*}
+\subsubsection{Unary predicate:  \pr{root\_node}}
+
+
+x is a root\_node if and only if x is not descended from anything
+
+\emph{Axiom: x is a root\_node if and only if x has no ancestors.}
+
+\begin{eqnarray*}
+ \pr{root\_node}(x) &\dimp & \n( \E y[ \pr{descended\_from}(y, x) ])
+\end{eqnarray*}
+\subsubsection{Relation:  \pr{nad}}
+
+
+x nad y if and only if x and y do not stand in a descended\_from relationship to the other. i.e. they are neither ancestors nor descendants of each other
+
+\begin{eqnarray*}
+ \pr{exact\_synonym}( \pr{nad},  \pr{not-ancestor-or-descendant}) 
+\end{eqnarray*}
+\emph{Axiom: every node stands in a nad relation to itself (because nothing descends from itself)}
+
+\begin{eqnarray*}
+ \pr{reflexive}( \pr{nad}) 
+\end{eqnarray*}
+\emph{Axiom: x nad y if and only if x is not descended from y and y is not descended from x}
+
+\begin{eqnarray*}
+ \n( \pr{descended\_from}(x, y) )\con \\
+ \n( \pr{descended\_from}(y, x) )&\imp & \pr{nad}(x, y) 
+\end{eqnarray*}
+\section{Basic Functional Inference Axioms}
+Axioms for inferring
+function for genes based on the ontology. These are independent of
+phylogenetic trees. We divide these into axioms for POSITIVE
+annotation statements (has\_function) and NEGATIVE annotations
+statements (lacks\_function). Note that here when we talk of function,
+we are talking broadly of the functional role within a larger
+biological\_process, and the subcellular site at which the function is
+realized.
+\subsection{Positive Inference}
+Relationships stating POSITIVE
+annotations, and axioms for inferences upon them.
+\subsubsection{Relation:  \pr{asserted\_has\_function}}
+
+
+G asserted\_has\_function if and
+only if G has function F, and a statement asserting this fact has been
+made by a curator with supporting evidence. This could come from Gene
+Association Files, excluding NOT annotations
+
+\begin{eqnarray*}
+ \pr{comment\_has\_function}( \pr{note that here function is used in a general
+sense covering GO annotations to molecular\_function,
+biological\_process and cellular\_component. Saying G has\_function
+Peroxisome is shorthand for saying G encodes a gene product that
+realizes its function within the Peroxisome}) 
+\end{eqnarray*}
+Example: \begin{eqnarray*}
+ \pr{asserted\_has\_function}( \pr{HSA:P53},  \pr{GO:DNA\_Repair}) 
+\end{eqnarray*}
+\subsubsection{Relation:  \pr{has\_function}}
+
+
+\emph{Axiom: G has\_function F if a curator says so (with evidence). This forms the base case in recursive inference}
+
+\begin{eqnarray*}
+ \pr{asserted\_has\_function}(g, f) &\imp & \pr{has\_function}(g, f) 
+\end{eqnarray*}
+Example: \begin{eqnarray*}
+ \pr{asserted\_has\_function}( \pr{HSA:P53},  \pr{GO:DNA\_Repair}) &\imp & \pr{has\_function}( \pr{HSA:P53},  \pr{GO:DNA\_Repair}) 
+\end{eqnarray*}
+\emph{Axiom: G has\_function F if G has\_function F' and F' is a kind of F. Note this is a recursive rule.}
+
+\begin{eqnarray*}
+ \pr{has\_function}(g, f_2) \con \\
+ \pr{is\_a}(f_2, f) &\imp & \pr{has\_function}(g, f) 
+\end{eqnarray*}
+Example: \begin{eqnarray*}
+ \pr{has\_function}( \pr{HSA:P53},  \pr{GO:DNA\_Repair}) \con \\
+ \pr{is\_a}( \pr{GO:DNA\_Repair},  \pr{GO:DNA\_Metabolism}) &\imp & \pr{has\_function}( \pr{HSA:P53},  \pr{GO:DNA\_Metabolism}) 
+\end{eqnarray*}
+Example: \begin{eqnarray*}
+ \pr{has\_function}( \pr{HSA:P53},  \pr{GO:DNA\_Metabolism}) \con \\
+ \pr{is\_a}( \pr{GO:DNA\_Repair},  \pr{GO:Metabolism}) &\imp & \pr{has\_function}( \pr{HSA:P53},  \pr{GO:Metabolism}) 
+\end{eqnarray*}
+\emph{Axiom: G has\_function F if G has\_function F' and F' is part of F. Note this is a recursive rule.}
+
+\begin{eqnarray*}
+ \pr{has\_function}(g, f_2) \con \\
+ \pr{part\_of}(f_2, f) &\imp & \pr{has\_function}(g, f) 
+\end{eqnarray*}
+Example: \begin{eqnarray*}
+ \pr{has\_function}( \pr{MGI:Pex1},  \pr{GO:Peroxisome}) \con \\
+ \pr{part\_of}( \pr{GO:Peroxisome},  \pr{GO:Cytoplasm}) &\imp & \pr{has\_function}( \pr{MGI:Pex1},  \pr{GO:Cytoplasm}) 
+\end{eqnarray*}
+\subsection{Negative Inference}
+Axioms for making inferences based
+on negative annotations. Note that annotations here propagate DOWN
+the GO graph
+\subsubsection{Relation:  \pr{asserted\_lacks\_function}}
+
+
+G asserted\_lacks\_function if
+and only if G lacks function F, and a statement asserting this fact
+has been made by a curator with supporting evidence. This would come
+from lines with operator NOT in Gene Association Files
+
+\subsubsection{Relation:  \pr{lacks\_function}}
+
+
+A relation between a gene F and a function F, such that G does not have function F
+
+\emph{Axiom: G lacks\_function F if and only if not( G has\_function F )}
+
+\begin{eqnarray*}
+ \pr{lacks\_function}(g, f) &\dimp & \n( \pr{has\_function}(g, f) )
+\end{eqnarray*}
+\emph{Axiom: G lacks\_function F if a curator says so}
+
+\begin{eqnarray*}
+ \pr{asserted\_lacks\_function}(g, f) &\imp & \pr{lacks\_function}(g, f) 
+\end{eqnarray*}
+\emph{Axiom: downward propagation of negated annotations over is\_a}
+
+\begin{eqnarray*}
+ \pr{lacks\_function}(g, f_2) \con \\
+ \pr{is\_a}(f, f_2) &\imp & \pr{lacks\_function}(g, f) 
+\end{eqnarray*}
+\emph{Axiom: downward propagation of negated annotations over part\_of}
+
+\begin{eqnarray*}
+ \pr{lacks\_function}(g, f_2) \con \\
+ \pr{part\_of}(f, f_2) &\imp & \pr{lacks\_function}(g, f) 
+\end{eqnarray*}
+Example: \begin{eqnarray*}
+ \pr{lacks\_function}( \pr{P35431},  \pr{GO:Mammary\_gland\_development}) \con \\
+ \pr{part\_of}( \pr{GO:Lactation},  \pr{GO:Mammary\_gland\_development}) &\imp & \pr{lacks\_function}( \pr{P35431},  \pr{GO:Lactation}) 
+\end{eqnarray*}
+\emph{Axiom: G does not have function F if G is in an organism lacking that function}
+
+\begin{eqnarray*}
+ \pr{in\_organism\_type}(g, o) \con \\
+ \pr{organism\_lacks\_function}(o, f) &\imp & \n( \pr{has\_function}(g, f) )
+\end{eqnarray*}
+Example: \begin{eqnarray*}
+ \pr{in\_organism\_type}( \pr{P35431},  \pr{Chicken}) \con \\
+ \pr{organism\_lacks\_function}( \pr{Chicken},  \pr{Lactation}) &\imp & \n( \pr{has\_function}( \pr{P35431},  \pr{Lactation}) )
+\end{eqnarray*}
+\section{Phylogenetic Functional Inference Axioms}
+Axioms for
+inferring function for genes based on the ontology and the
+phylogenetic tree. These are broken into two sub-sections: propagation
+DOWN the phylogenetic tree, and propagation UP the phylogenetic
+tree. From an operational point of view the first step would be to
+propagate up to ancestral genes based on experimental evidence in
+extant organisms, followed by propagation down to fill in the gaps in
+extant genes.
+\subsection{Down-propagation}
+Inference of function of leaf node
+genes. Inference DOWN the phylogenetic tree. We inherit genes from our
+descendants, and also the function of those genes. Note that in order
+to make any inferences, we first have to assign function to ancestral
+genes.
+\emph{Axiom: down-propagation: functions propagate down the phylogenetic; tree UNLESS there was an ancestral loss.  The results of this; inference can be used to populate species-specific GAFs. }
+
+\begin{eqnarray*}
+ \pr{descended\_from}(g, g_p) \con \\
+ \pr{has\_function}(g_p, f) \con \\
+ \n( \pr{lacks\_function}(g, f) )&\imp & \pr{has\_function}(g, f) 
+\end{eqnarray*}
+\emph{Axiom: down-propagation: functions propagate down the phylogenetic; tree UNLESS there was an ancestral gain}
+
+\begin{eqnarray*}
+ \pr{descended\_from}(g, g_p) \con \\
+ \pr{lacks\_function}(g_p, f) \con \\
+ \n( \pr{has\_function}(g, f) )&\imp & \pr{has\_function}(g, f) 
+\end{eqnarray*}
+\begin{eqnarray*}
+ \pr{comment}( \pr{Thus far we have dealt with inferences that are all by
+definition true. For the final }) 
+\end{eqnarray*}
+\subsection{Up-propgatation}
+Inference of function of intermediate
+node genes. Inference UP the phylogenetic tree. The assumption is that
+if the descendant genes of an ancestral gene share the same function,
+then either (a) the ancestor gene had that function or (b) the gene
+evolved that function independently. The latter is more likely in the
+case of gene duplications. We cannot reconstruct with 100%
+accuracy. Ideally we would use a probabilistic model (eg Sifter)
+combined with curator knowledge. The goal here with these logical
+axioms is to present possibe candidate solutions.
+\begin{eqnarray*}
+ \pr{comment}( \pr{first we define two relations concerning the evolution and
+loss of function}) 
+\end{eqnarray*}
+\subsubsection{Relation:  \pr{descendents\_independently\_evolved}}
+
+
+G
+descendents\_independently\_evolved F if there exists at least two
+descendants of G that have function F, but F is not present in G.
+
+\emph{Axiom: G has descendants that indepedently evolved F if and only if G; lacks F and G is the LCA of two genes that have F}
+
+\begin{eqnarray*}
+ \pr{has\_function}(d_1, f) \con \\
+ \pr{has\_function}(d_2, f) \con \\
+ \pr{least\_common\_ancestor}(d_1, d_2, g) \con \\
+ \n( \pr{has\_function}(g, f) )&\dimp & \pr{descendents\_independently\_evolved}(g, f) 
+\end{eqnarray*}
+\subsubsection{Relation:  \pr{descendents\_independently\_lost}}
+
+
+G
+descendents\_independently\_lost F if there exists at least two
+descendants of G that lack function F, and F is present in G.
+
+\emph{Axiom: G has descendants that indepedently lost F if and only if G; lacks F and G is the LCA of two genes that have F}
+
+\begin{eqnarray*}
+ \pr{lacks\_function}(d_1, f) \con \\
+ \pr{lacks\_function}(d_2, f) \con \\
+ \pr{least\_common\_ancestor}(d_1, d_2, g) \con \\
+ \pr{has\_function}(g, f) &\dimp & \pr{descendents\_independently\_lost}(g, f) 
+\end{eqnarray*}
+\subsubsection{Relation:  \pr{plausibly\_has\_function}}
+
+
+G plausibly\_has\_function F if
+there is reasonable grounds to believe that G has\_function F, based on
+the descendants of G having function F
+
+\emph{Axiom: when we say G plausibly\_has\_function F it means we are; guaranteed that either (a) it is indeed the case that G; has\_function F or (b) an orthologous pair descended from G have F,; and that they each evolved F independently. In practical terms, we; can present these inferences to a curator who can use judgement in; selecting the most likely scenario; or the results could be passed; to a probabilistic model}
+
+\begin{eqnarray*}
+ \pr{plausibly\_has\_function}(g, f) &\imp & \pr{has\_function}(g, f) \dis  \n( \pr{duplication}(g) )\con \\
+&& \pr{descendents\_independently\_evolved}(g, f) 
+\end{eqnarray*}
+\emph{Axiom: when we say G plausibly\_lacks\_function F it means we are; guaranteed that either (a) it is indeed the case that G; lacks\_function F or (b) the descendants of G lack F, and that they; lost it independently. In practical terms, this can be used; to make NOT annotations to ancestral nodes, with care}
+
+\begin{eqnarray*}
+ \pr{plausibly\_lacks\_function}(g, f) &\imp & \pr{lacks\_function}(g, f) \dis  \pr{descendents\_independently\_lost}(g, f) 
+\end{eqnarray*}
+\emph{Axiom: propagation UP the phylogenetic tree:; here we would ideally have a probabilistic model. This; just gives *candidates* for realizing as curator-vetted; annotations}
+
+\begin{eqnarray*}
+ \pr{has\_function}(d_1, f) \con \\
+ \pr{has\_function}(d_2, f) \con \\
+ \pr{least\_common\_ancestor}(d_1, d_2, g) &\imp & \pr{plausibly\_has\_function}(g, f) 
+\end{eqnarray*}
+\emph{Axiom: propagation of negative annotations UP the phylogenetic; tree but DOWN the GO.}
+
+\begin{eqnarray*}
+ \pr{lacks\_function}(d_1, f) \con \\
+ \pr{lacks\_function}(d_2, f) \con \\
+ \pr{least\_common\_ancestor}(d_1, d_2, g) &\imp & \pr{plausibly\_lacks\_function}(g, f) 
+\end{eqnarray*}
